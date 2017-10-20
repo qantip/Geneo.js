@@ -1,6 +1,5 @@
-function Geneo(x,y){
+function Geneo(){
   var DNALENGTH = 100;
-  this.origin = new p5.Vector(x,y);
   this.dna = new DNA(DNALENGTH);
 
   this.display = function(){
@@ -14,5 +13,25 @@ function Geneo(x,y){
         this.dna.set(i,arguments[i]);
       }
     }
+  }
+
+  this.setMin = function(value){
+    for(var i = 0; i < this.dna.size; i++){
+      this.dna.genom[i].min = value;
+    }
+  }
+
+  this.setMax = function(value){
+    for(var i = 0; i < this.dna.size; i++){
+      this.dna.genom[i].max = value;
+    }
+  }
+
+  this.randomize = function(index){
+    this.dna.mute(index,1.0)
+  }
+
+  this.mute = function(index,rate){
+    this.dna.mute(index,rate)
   }
 }

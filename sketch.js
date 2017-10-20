@@ -1,18 +1,25 @@
-var tester, tester2;
+var tester = [];
+var POPULATIONSIZE = 10;
 
 function setup(){
   createCanvas(windowWidth,windowHeight);
-  background(0);
-  tester = new Geneo(200,200);
-  tester2 = new Geneo(125,12);
-  tester.setDna(80,150,128);
-  tester2.setDna(90,140,255);
+
+  for (var i = 0; i < POPULATIONSIZE; i++){
+    tester.push(new Geneo());
+    tester[i].setMin(0);
+    tester[i].setMax(400);
+    tester[i].randomize(0);
+    tester[i].randomize(1);
+    tester[i].randomize(2);
+  }
+
 }
 
 function draw(){
   background(0);
-  tester2.dna.mute(0,1);
-  tester2.dna.mute(1,1);
-  tester.display();
-  tester2.display();
+  for (var i = 0; i < POPULATIONSIZE; i++){
+    tester[i].mute(0,0.005);
+    tester[i].mute(1,0.005);
+    tester[i].display();
+  }
 }

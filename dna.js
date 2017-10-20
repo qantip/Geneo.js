@@ -7,15 +7,21 @@ function DNA(length){
   }
 
   this.set = function(index, value){
-    this.genom[index].set(value);
+    if (index <= this.size){
+      this.genom[index].set(value);
+    }
   }
 
   this.get = function(index){
-    return this.genom[index].get();
+    if (index <= this.size){
+      return this.genom[index].get();
+    }
   }
 
   this.mute = function(index, rate){
-    this.genom[index].mute(rate);
+    if (index <= this.size){
+      this.genom[index].mute(rate);
+    }
   }
 }
 
@@ -26,7 +32,7 @@ function Gen(){
   this.max = 255;
 
   this.set = function(value){
-    this.value = value;
+    this.value = constrain(value,this.low,this.high);
   }
   this.get = function(){
     return this.value;
@@ -36,6 +42,10 @@ function Gen(){
     if (rate === undefined){
       rate = 1.0;
     }
-  this.value = random(this.min, this.max);
+    var range = (this.max - this.min) * rate;
+    var minVal = constrain(this.value - range,this.min,this.max);
+    var maxVal = constrain(this.value + range,this.min,this.max);
+    this.value = random(minVal, maxVal);
+    print(range,this.value,minVal,maxVal);
   }
 }

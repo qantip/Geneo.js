@@ -67,6 +67,10 @@ function Gen(){
 				string = string.concat("]");
 				console.log(string);
 			}
+			
+			this.length = function(){ // NOT TESTED
+				return this.genes.size();
+			}
 		}
 		function map(number, low, high, newLow, newHigh){
 			if (low == high){
@@ -80,3 +84,34 @@ function Gen(){
 		function constrain(number, low, high){
 			return Math.max(low, Math.min(number, high));
 		}
+
+class Geneo{ // NOT TESTED YET
+	constructor(){
+		//this.mutationRate = 0.01; //mutation is not part of mating but dna itself
+	}
+	
+	combine(dnaArray){
+		if (this.lengthCheck(dnaArray)){
+			parentCount = dnaArray.size();
+			dnaLength = dnaArray[0].length();
+			result = new DNA(dnaLength);
+			
+			for (var i = 0; i < dnaLength; i++){
+				pick = Math.floor(Math.random()*parentCount);
+				result.set(i,dnaArray[pick].get());
+			}
+			return result;
+		}
+	}
+	
+	lengthCheck(dnaArray){
+		result = True;
+		length = dnaArray[0].length(); // TODO method length()
+		for (var i = 1; i < dnaArray.size(); i++){
+			if length != dnaArray[i].length(){
+				result = False;
+			}
+		}
+		return result;
+	}
+}

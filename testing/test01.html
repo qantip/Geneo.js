@@ -1,0 +1,25 @@
+<html>
+<body>
+  <script src="../geneo-rebuild.js"></script>
+  <script>
+    a = new Dna(5);
+    b = new Dna(5);
+    for (var i = 0; i < 5; i++){
+      a.set(i,1);
+      b.set(i,0);
+    }
+    console.log("to je a:");
+    a.echo();
+    console.log("to je b:");
+    b.echo();
+    c = new Geneo();
+    d = c.combine([a,b]);
+    console.log("to je d:");
+    d.echo();
+    for(var i = 0; i < 10; i++){
+      d.mutate(0.5,0.1);
+      d.echo(5);
+    }
+  </script>
+</body>
+</html>

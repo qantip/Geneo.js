@@ -3,7 +3,7 @@ class Gen{
 		if (value == undefined){
 			this.value = 0;
 		} else {
-			this.value = value;
+			this.set(value);
 		}
 		this.max = 1.0;
 		this.min = 0.0;

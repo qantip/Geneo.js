@@ -10,10 +10,17 @@ class Gen{
 		this.wrap = false;
 	}
 	get(){
+		return map(this.value,0,1,this.min,this.max);
+	}
+	
+	getRaw(){
 		return this.value;
 	}
-	set(input){
+	setRaw(input){
 		this.value = constrain(input,this.min,this.max);
+	}
+	set(input){
+		this.value = map(input,this.min,this.max,0,1);
 	}
 	mutate(rate){
 		if (rate === undefined){
@@ -48,9 +55,19 @@ class Dna{
 	get(index){
 		return this.genes[index].get();
 	}
+	
+	getRaw(index){
+		return this.genome[index].getRaw();
+	}
+	
 	set(index, value){
 		this.genes[index].set(value);
 	}
+	
+	setRaw(index){
+		this.genome[index].setRaw();
+	}
+	
 	mutate(chance, rate){
 		for(var i = 0; i < this.genes.length; i++){
 			if (Math.random() <= chance){
@@ -90,7 +107,61 @@ function constrain(number, low, high){
 class Geneo{ // NOT TESTED YET
 	constructor(){
 		//this.mutationRate = 0.01; //mutation is not part of mating but dna itself
+		this.length = 256;
+		this.genWrap = [];
+		this.genMode = [];
+		this.genRange = [];
+		
+		# TODO initialize by setDnaLength()
+		for (var i = 0; i < this.length; i++){
+			this.setGenWrap(i,false);
+			this.setGenMode(i,0);
+			this.setGenRange(i,0,1);
+		}
+		
 	}
+	
+	setDnaLength(length){
+		if (length > 0){
+			this.length = length
+		}
+		# TODO create update of genWrap, genMode and genRange
+	}
+	
+	setGenWrap(index,wrap){
+		if (index <= this.length){
+			this.genWrap[index] = wrap;
+		}
+	}
+	
+	setGenMode(index,mode){
+		if (index <= this.length){
+			this.genMode[index] = mode;
+		}
+	}
+	
+	setGenRange(index,low,high){
+		if (index <= this.length){
+			this.genRange[index] = [low,high];
+		}
+	}
+	
+	randomDna(){
+		var result = new Dna(this.length);
+		for(var i = 0; i < this.length; i++){
+			result.set(i,Math.random()); # TODO implement min/max (will it be on dna base or geneo base)?
+		}
+		return result;
+	}
+	
+	newPopulation(count){
+		var result = []
+		for(var i = 0; i < count; i++){
+			result.push(randomDna());
+		}
+		return result;
+	}
+	
 	combine(dnaArray){
 		if (this.lengthCheck(dnaArray)){
 			var parentCount = dnaArray.length;

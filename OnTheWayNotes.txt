@@ -1,0 +1,97 @@
+var geneo = new Geneo();
+geneo.setDnaLength(20); # done
+geneo.setGenWarp(1,True); # done
+geneo.setGenRange(1,0,255); # done
+var dna = geneo.RandomDna(); # done
+var dnaArray = geneo.newPopulation(5); #done
+
+var candidate = geneo.getByFitness(fitnessArray);
+var candidate2 = geneo.getByFitness(fitnessArray);
+
+var newDna = geneo.combine([candidate1,candidate2]);
+newDna.mutate(0.04,1);
+
+dna.setMin(0,0);
+dna.setMax(0,100);
+dna.setRange(0,0,100);
+dna.getRaw(0); # done
+>> 0.254687225
+dna.get(0) # done
+>> 25
+
+class Gen{
+	this.min = 0.0;
+	this.max = 1.0;
+	
+	get(){
+		return map(this.value,0,1,this.min,this.max);
+	}
+	
+	getRaw(){
+		return this.value;
+	}
+}
+
+class Dna{
+	getRaw(index){
+		return this.genome[index].getRaw();
+	}
+}
+
+class Geneo{
+
+	...
+	this.length = 256;
+	this.genWarp = [];
+	this.genMode = [];
+	this.genRange = [];
+	
+	# TODO initialize by setDnaLength()
+	for (var i = 0; i < this.length; i++){
+		this.setGenWarp(i,false);
+		this.setGenMode(i,0);
+		this.setGenRange(i,0,1);
+	}
+	
+	setDnaLength(length){
+		if (length > 0){
+			this.length = length
+		}
+		# TODO create update of genWarp, genMode and genRange
+	}
+	
+	setGenWarp(index,warp){
+		if (index <= this.length){
+			this.genWarp[index] = warp;
+		}
+	}
+	
+	setGenMode(index,mode){
+		if (index <= this.length){
+			this.genMode[index] = mode;
+		}
+	}
+	
+	setGenRange(index,low,high){
+		if (index <= this.length){
+			this.genRange[index] = [low,high];
+		}
+	}
+	
+	randomDna(){
+		var result = new Dna(this.length);
+		for(var i = 0; i < this.length; i++){
+			result.set(i,Math.random()); # TODO implement min/max (will it be on dna base or geneo base)?
+		}
+		return result;
+	}
+	
+	newPopulation(count){
+		var result = []
+		for(var i = 0; i < count; i++){
+			result.push(randomDna());
+		}
+		return result;
+	}
+	
+}

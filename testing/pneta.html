@@ -143,14 +143,26 @@ class Geneo{
 		
 	}
 	
-	setDnaLength(length){
-		if (length > 0){
-			// if longer repeat values from last
+	setDnaLength(newLength){
+		console.log("setLength:",newLength);
+		if (newLength > 0){
+			console.log("bigger then zero");
+			if (newLength > this.length){ // if longer repeat values from last
+				console.log("bigger then last",this.length);
+				for (var i = this.lenght - 1; i < newLength; i++){
+					console.log("extending");
+					this.setGenWrap(i,this.genWrap[this.length]);
+					this.setGenMode(i,this.genMode[this.length]);
+					this.setGenRange(i,this.genRange[this.length].min,this.genRange[this.length].max);
+				}
+			} else if (newLength < this.length){ // else cut to size
+				console.log("cutting");
+				this.genWrap = this.genWrap.slice(0,newLength);
+				this.genMode = this.genMode.slice(0,newLength);
+				this.genRange = this.genRange.slice(0,newLength);
+			}			
 			
-			// else cut to size
-			
-			this.length = length
-			
+			this.length = newLength;
 		}
 		// TODO create update of genWrap, genMode and genRange
 	}

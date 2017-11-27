@@ -1,6 +1,6 @@
 class Gen{
 	constructor(value){
-		if (value == undefined){
+		if (isNaN(value)){
 			this.value = 0;
 		} else {
 			this.set(value);
@@ -8,20 +8,46 @@ class Gen{
 		this.max = 1.0;
 		this.min = 0.0;
 		this.wrap = false;
+		this.mode = 0;
 	}
+	
 	get(){
-		return map(this.value,0,1,this.min,this.max);
+		switch(this.mode){
+			case 0: // return float
+				return map(this.value,0,1,this.min,this.max);
+			case 1: // return integer
+				return Math.round(
+					map(this.value,0,1,this.min,this.max)
+					);
+		}
 	}
 	
 	getRaw(){
 		return this.value;
 	}
+	
 	setRaw(input){
 		this.value = constrain(input,this.min,this.max);
 	}
+	
 	set(input){
 		this.value = map(input,this.min,this.max,0,1);
 	}
+	
+	setRange(low,high){
+		this.min = low;
+		this.max = high;
+		this.value = constrain(this.value,this.min,this.max);
+	}
+	
+	setWrap(bool){
+		this.wrap = bool;
+	}
+	
+	setMode(mode){
+		this.mode = mode;
+	}
+	
 	mutate(rate){
 		if (rate === undefined){
 			var rate = 1.0;
@@ -34,17 +60,15 @@ class Gen{
 		if (this.wrap){
 			var newValue = map(Math.random(),0,1,minValue,maxValue);
 			this.set((newValue - this.min)%(this.max - this.min) + this.min);
-		} else { // not this.wrap
+		} else { 
 			minValue = constrain(minValue, this.min, this.max);
 			maxValue = constrain(maxValue, this.min, this.max);
 			var rnd = Math.random();
 			var newValue = map(rnd,0,1,minValue,maxValue);
-			// console.log(newValue,rnd,difference,minValue,maxValue); // debugg
 			this.set(newValue);
 		}
 	}
 }
-
 class Dna{
 	constructor(length){
 		this.genes = []
@@ -57,15 +81,27 @@ class Dna{
 	}
 	
 	getRaw(index){
-		return this.genome[index].getRaw();
+		return this.genes[index].getRaw();
 	}
 	
 	set(index, value){
 		this.genes[index].set(value);
 	}
 	
-	setRaw(index){
-		this.genome[index].setRaw();
+	setRaw(index, value){
+		this.genes[index].setRaw(value);
+	}
+	
+	setWrap(index, bool){
+		this.genes[index].setWrap(bool);
+	}
+	
+	setRange(index, low, high){
+		this.genes[index].setRange(low, high);
+	}
+	
+	setMode(index, mode){
+		this.genes[index].setMode(mode);
 	}
 	
 	mutate(chance, rate){
@@ -81,13 +117,16 @@ class Dna{
 		}
 		var string = "[";
 		for(var i = 0; i < this.genes.length; i++){
+			if (i != 0){
+				string = string.concat(", ");
+			}
 			string = string.concat(Number(this.genes[i].get()).toFixed(decimals));
-			string = string.concat(", ");
 		}
 		string = string.concat("]");
 		console.log(string);
 	}
-	length(){ // NOT TESTED
+	
+	length(){ 
 		return this.genes.length;
 	}
 }
@@ -104,52 +143,88 @@ function constrain(number, low, high){
 	return Math.max(low, Math.min(number, high));
 }
 
-class Geneo{ // NOT TESTED YET
+class Geneo{ 
 	constructor(){
-		//this.mutationRate = 0.01; //mutation is not part of mating but dna itself
-		this.length = 256;
-		this.genWrap = [];
-		this.genMode = [];
-		this.genRange = [];
-		
-		# TODO initialize by setDnaLength()
-		for (var i = 0; i < this.length; i++){
-			this.setGenWrap(i,false);
-			this.setGenMode(i,0);
-			this.setGenRange(i,0,1);
-		}
-		
-	}
+		this.genLength = 1;
+		this.genWrap = [false];
+		this.genMode = [0];
+		this.genRange = [{min:0, max:1}];
+		this.setDnaLength(256); // default length
+		// This is a kind strange ... Could be done better
+
+	}	
 	
-	setDnaLength(length){
-		if (length > 0){
-			this.length = length
+	setDnaLength(newLength){
+		if (newLength > 0){
+			var oldLength = this.genLength;
+			this.genLength = newLength;
+			if (newLength > oldLength){ // if longer repeat values from last
+				for (var i = oldLength; i < newLength; i++){
+					this.setGenWrap(i,this.genWrap[i-1]);
+					this.setGenMode(i,this.genMode[i-1]);
+					this.setGenRange(i,
+									 this.genRange[i-1].min,
+									 this.genRange[i-1].max
+									);
+				}
+			} else if (newLength < oldLength){ // else cut to size
+				this.genWrap = this.genWrap.slice(0,newLength);
+				this.genMode = this.genMode.slice(0,newLength);
+				this.genRange = this.genRange.slice(0,newLength);
+			}			
 		}
-		# TODO create update of genWrap, genMode and genRange
 	}
 	
 	setGenWrap(index,wrap){
-		if (index <= this.length){
+		if (index < this.genLength){
 			this.genWrap[index] = wrap;
 		}
 	}
 	
+	setAllWrap(wrap){
+		for (var i = 0; i < this.genLength; i++){
+			this.genWrap[i] = wrap;
+		}
+	}
+	
+	setAllMode(mode){
+		for (var i = 0; i < this.genLength; i++){
+			this.genMode[i] = mode;
+		}
+	}
+	
+	setAllRange(low,high){
+		for (var i = 0; i < this.genLength; i++){
+			this.genRange[i] = {min:low, max:high};
+		}
+	}
+	
 	setGenMode(index,mode){
-		if (index <= this.length){
+		if (index < this.genLength){
 			this.genMode[index] = mode;
 		}
 	}
 	
 	setGenRange(index,low,high){
-		if (index <= this.length){
-			this.genRange[index] = [low,high];
+		if (index < this.genLength){
+			this.genRange[index] = {min:low, max:high};
 		}
 	}
 	
+	newDna(){
+		var result = new Dna(this.genLength);
+		for (var i = 0; i < this.genLength; i++){
+			result.setWrap(i,this.genWrap[i]);
+			result.setRange(i,this.genRange[i].min,this.genRange[i].max);
+			result.setMode(i,this.genMode[i]); 
+		}
+		return result;
+	}
+	
 	randomDna(){
-		var result = new Dna(this.length);
-		for(var i = 0; i < this.length; i++){
-			result.set(i,Math.random()); # TODO implement min/max (will it be on dna base or geneo base)?
+		var result = this.newDna();
+		for(var i = 0; i < this.genLength; i++){
+			result.setRaw(i,Math.random()); 
 		}
 		return result;
 	}
@@ -157,7 +232,7 @@ class Geneo{ // NOT TESTED YET
 	newPopulation(count){
 		var result = []
 		for(var i = 0; i < count; i++){
-			result.push(randomDna());
+			result.push(this.randomDna());
 		}
 		return result;
 	}
@@ -166,6 +241,9 @@ class Geneo{ // NOT TESTED YET
 		if (this.lengthCheck(dnaArray)){
 			var parentCount = dnaArray.length;
 			var dnaLength = dnaArray[0].length();
+			// TODO: port other atributes too (wrap, range, mode, ...)
+			// TODO: compatibility check for genes
+			// TODO: consider global setting dna atributes by parent object -> Geneo.
 			var result = new Dna(dnaLength);
 			for (var i = 0; i < dnaLength; i++){
 				var pick = Math.floor(Math.random()*parentCount);
@@ -174,10 +252,10 @@ class Geneo{ // NOT TESTED YET
 			return result;
 		}
 	}
-
+	
 	lengthCheck(dnaArray){
 		var result = true;
-		var length = dnaArray[0].length(); // TODO method length()
+		var length = dnaArray[0].length();
 		for (var i = 1; i < dnaArray.length; i++){
 			if (length != dnaArray[i].length()){
 				result = false;
@@ -185,7 +263,7 @@ class Geneo{ // NOT TESTED YET
 		}
 		return result;
 	}
-
+	
 	mattingPool(FitnessArray,count){
 		result = [];
 		for (var i = 0; i < count; i++){
@@ -193,11 +271,11 @@ class Geneo{ // NOT TESTED YET
 		}
 		return result;
 	}
-
+	
 	weightedRandom(weightArray){
 		var weightSum = 0;
-		for weight in weightArray{
-			weightSum += weight;
+		for (var i = 0; i < weightArray.length; i++){
+			weightSum += weightArray[i];
 		}
 		var pick = Math.random() * weightSum;
 		for (var i = 0; i < weightArray.length; i++){
@@ -208,3 +286,6 @@ class Geneo{ // NOT TESTED YET
 		}
 	}
 }
+
+// TODO: fitnessArray 
+// TODO: sort and comment whole code

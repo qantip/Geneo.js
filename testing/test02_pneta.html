@@ -1,0 +1,22 @@
+<html>
+  <head>
+    <title>Geneo Testing | 02</title>
+  </head>
+  <body>
+    Open console for more info<br>
+    g - Geneo object<br>
+    d - Dna object<br>
+    rd - Dna object with random values<br>
+    p - population / array of random Dna objects<br>
+    <script src="../geneo-rebuild.js"></script>
+    <script>
+      g = new Geneo();
+      g.setDnaLength(5);
+      p = g.newPopulation(10);
+      d = g.newDna();
+      rd = g.randomDna();
+    </script>
+  </body>
+</html>
+    
+  

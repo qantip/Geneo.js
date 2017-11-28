@@ -48,25 +48,20 @@ class Gen{
 		this.mode = mode;
 	}
 	
-	mutate(rate){
-		if (rate === undefined){
-			var rate = 1.0;
-		} else {
-			rate = constrain(rate,0,1);
-		}
-		var difference = (this.max - this.min) * rate;
-		var minValue = this.value - difference;
-		var maxValue = this.value + difference;
-		if (this.wrap){
-			var newValue = map(Math.random(),0,1,minValue,maxValue);
-			this.set((newValue - this.min)%(this.max - this.min) + this.min);
+	mutate (rate){ // NOT TESTED
+		if (isNaN(rate)){ 
+			rate = 1;
 		} else { 
-			minValue = constrain(minValue, this.min, this.max);
-			maxValue = constrain(maxValue, this.min, this.max);
-			var rnd = Math.random();
-			var newValue = map(rnd,0,1,minValue,maxValue);
-			this.set(newValue);
+			rate = constraint(rate,0,1); 
+		       }
+
+		var minValue = this.getRaw() - rate;
+		var maxValue = this.getRaw() + rate;
+		var newValue = map(Math.random(),0,1,minValue,maxValue);
+		if (this.wrap){
+			newValue = ((newValue+1)%1); // overflow
 		}
+		this.setRaw(newValue);
 	}
 }
 class Dna{

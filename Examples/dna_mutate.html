@@ -1,0 +1,46 @@
+<html>
+<head>
+	<script src="..\geneo_rebuild.js"><script>
+</head>
+<body>
+	<div class="bar" id="a">null</div>
+	<div class="bar" id="b">null</div>
+	<div class="bar" id="c">null</div>
+	<div class="color" id="col">HSL</div>
+	
+	<script>
+		dna = new Dna(3);
+		dna.setRange(0,0,360);
+		dna.setRange(1,0,100);
+		dna.setRange(2,0,100);
+		dna.setWrap(0,true);
+		dna.mutate(1,1);
+		var counter = 0;
+
+		function mainLoop(){
+			counter++;
+			var a = document.getElementById("a");
+			var b = document.getElementById("b");
+			var c = document.getElementById("c");
+			var col = document.getElementById("col");
+			a.innerHTML = Math.round(dna.get(0));
+			a.style.width = map(dna.get(0),0,360,0,100)+"px";
+			b.innerHTML = Math.round(dna.get(1));
+			b.style.width = dna.get(1)+"px";
+			c.innerHTML = Math.round(dna.get(2));
+			c.style.width = dna.get(2)+"px";
+			col.style.backgroundColor = "hsl("+dna.get(0)+","+dna.get(1)+"%,"+dna.get(2)+"%)";
+			
+			dna.mutate(1,0.01);
+			
+			// Request next frame
+			if (counter < 100000){
+				window.requestAnimationFrame(mainLoop);
+			}
+		}
+
+		// start loop
+		window.requestAnimationFrame(mainLoop)
+	</script>	
+</body>
+</html>

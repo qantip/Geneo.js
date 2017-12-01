@@ -1,6 +1,7 @@
 <html>
 <head>
 	<link rel="icon" type="image/png" href="src/ico_amber.png" />
+	<title>Exha | Geneo</title>
 	<style>
 		.bar{
 			background-color: #CCCCCC;
@@ -90,18 +91,41 @@ class Gen{
 		this.setRaw(newValue);
 	}
 	
-	selectOne(genArray){ // I have no better idea how to name it
-		// this should be function outside class better ... maybe
+	orPick(){
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		var pick = Math.floor(Math.random()*args.length);
+		console.log(args.length,pick);
+		return args[pick];
 	}
 	
 	blend(genArray){
-		// TODO
-	}
-	
-	blendWeighted(genArray,weightArray){
-		// TODO
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		var weight = [];
+		var weightSum = 0;
+		for (var i = 0; i < args.length; i++){
+			weight[i] = Math.random();
+			weightSum += weight[i];
+		}
+		var weightPick = Math.random()*weightSum;
+		
+		// Dna copy of this
+		var result = new Gen(this.length);
+		result.setRange(this.min,this.max);
+		result.setMode(this.mode);
+		result.setWrap(this.wrap);
+		
+		var weightedValue = 0;
+		for (var i = 0; i < args.length; i++){
+			weightedValue += args[i].getRaw()*weight[i];
+		}
+		result.setRaw(weightedValue); // set new value
+		return result;
+		
 	}
 }
+
 class Dna{
 	constructor(length){
 		this.genes = []
@@ -145,6 +169,15 @@ class Dna{
 		}
 	}
 	
+	combineNew(){
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		for(var i = 0; i < this.length(); i++){
+			// I have no idea how to make something like function(arg1,arg2, .. ,argN) ... I can do it by Array, which means to rewrite Gen.orPick()
+			// this.orPick(//);
+		}
+	}
+	
 	combine(){ // NOT TESTED
 		arguments.push(this);
 		var count = arguments.length;
@@ -177,14 +210,14 @@ class Dna{
 				weight.push(Math.random());
 				massAddition += weight[j];
 			}
-			for (var j = 0; j < var newValue = 0; arguments.length; j++){
+			for (var j = 0; j < arguments.length; j++){
+				newValue = 0; 
 				newValue = arguments[j].getRaw()*(weight/massAddition);
 			}
 		resultDna.setRaw(newValue);
 		}
 		return resultDna;
 	}
-}
 	
 	echo(decimals){
 		if (decimals === undefined){
@@ -344,6 +377,7 @@ class Geneo{
 		var length = dnaArray[0].length();
 		for (var i = 1; i < dnaArray.length; i++){
 		// TODO: finish this method
+		}
 	}
 	
 	mattingPool(FitnessArray,count){
@@ -358,9 +392,9 @@ class Geneo{
 		var result = [];
 		var count = this.length;
 		var selectionPool = this.mattingPool(fitnessArray,count)
-		for selection in selectionPool{
+		for (selection in selectionPool){
 			var parentArray = [];
-			for index in selection{
+			for (index in selection){
 				parentArray.push(dnaArray[index]);
 			}
 			this.combine(parentArray) // TODO: Finish this method
@@ -390,7 +424,6 @@ class Geneo{
 <div class="bar" id="a">null</div>
 <div class="bar" id="b">null</div>
 <div class="bar" id="c">null</div>
-<br>
 <div class="color" id="col">HSL</div>
 <script>
 dna = new Dna(3);

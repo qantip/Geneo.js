@@ -27,7 +27,7 @@ class Gen{
 	}
 	
 	setRaw(input){
-		this.value = constrain(input,this.min,this.max);
+		this.value = constrain(input,0,1);
 	}
 	
 	set(input){
@@ -37,7 +37,7 @@ class Gen{
 	setRange(low,high){
 		this.min = low;
 		this.max = high;
-		this.value = constrain(this.value,this.min,this.max);
+		//this.value = constrain(this.value,this.min,this.max);
 	}
 	
 	setWrap(bool){
@@ -48,22 +48,61 @@ class Gen{
 		this.mode = mode;
 	}
 	
-	mutate (rate){ // NOT TESTED
+	mutate (rate){
 		if (isNaN(rate)){ 
 			rate = 1;
 		} else { 
-			rate = constraint(rate,0,1); 
+			rate = constrain(rate,0,1); 
 		       }
-
-		var minValue = this.getRaw() - rate;
-		var maxValue = this.getRaw() + rate;
-		var newValue = map(Math.random(),0,1,minValue,maxValue);
 		if (this.wrap){
+			var minValue = this.getRaw() - rate;
+			var maxValue = this.getRaw() + rate;
+			var newValue = map(Math.random(),0,1,minValue,maxValue);
 			newValue = ((newValue+1)%1); // overflow
+		} else {
+			var minValue = constrain(this.getRaw() - rate,0,1);
+			var maxValue = constrain(this.getRaw() + rate,0,1);
+			var newValue = map(Math.random(),0,1,minValue,maxValue);
 		}
 		this.setRaw(newValue);
 	}
+	
+	orPick(){
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		var pick = Math.floor(Math.random()*args.length);
+		console.log(args.length,pick);
+		return args[pick];
+	}
+	
+	
+	blend(genArray){
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		var weight = [];
+		var weightSum = 0;
+		for (var i = 0; i < args.length; i++){
+			weight[i] = Math.random();
+			weightSum += weight[i];
+		}
+		var weightPick = Math.random()*weightSum;
+		
+		// Dna copy of this
+		var result = new Gen(this.length);
+		result.setRange(this.min,this.max);
+		result.setMode(this.mode);
+		result.setWrap(this.wrap);
+		
+		var weightedValue = 0;
+		for (var i = 0; i < args.length; i++){
+			weightedValue += args[i].getRaw()*weight[i];
+		}
+		result.setRaw(weightedValue); // set new value
+		return result;
+		
+	}
 }
+
 class Dna{
 	constructor(length){
 		this.genes = []
@@ -106,6 +145,57 @@ class Dna{
 			}
 		}
 	}
+	
+	combineNew(){
+		var args = Array.prototype.slice.call(arguments)
+		args.push(this);
+		for(var i = 0; i < this.length(); i++){
+			// I have no idea how to make something like function(arg1,arg2, .. ,argN) ... I can do it by Array, which means to rewrite Gen.orPick()
+			// this.orPick(//);
+		}
+	}
+	
+	combine(){ // NOT TESTED
+		arguments.push(this);
+		var count = arguments.length;
+		var resultDna = new Dna(this.length);
+		resultDna.dnaMode = this.dnaMode;
+		resultDna.dnaWrap = this.dnaWrap;
+		resultDna.dnaRange = this.dnaRange;
+		for (var i = 0; i < resultDna.length; i++){
+			var pick = floor(Math.random() * count);
+			var newValue = arguments[pick].getRaw();
+			if(isNaN(newValue)){
+				newValue = 0;
+			}
+			resultDna.setRaw(newValue);
+		}
+		return resultDna;
+	}
+
+	blend(){ // NOT TESTED
+		arguments.push(this);
+		var count = arguments.length;
+		var resultDna = new Dna(this.length);
+		resultDna.dnaMode = this.dnaMode;
+		resultDna.dnaWrap = this.dnaWrap;
+		resultDna.dnaRange = this.dnaRange;
+		for (var i = 0; i < resultDna.length; i++){
+			var massAddition = 0;
+			var weight = [];
+			for (var j = 0; j < arguments.length; j++){
+				weight.push(Math.random());
+				massAddition += weight[j];
+			}
+			for (var j = 0; j < arguments.length; j++){
+				newValue = 0; 
+				newValue = arguments[j].getRaw()*(weight/massAddition);
+			}
+		resultDna.setRaw(newValue);
+		}
+		return resultDna;
+	}
+	
 	echo(decimals){
 		if (decimals === undefined){
 			decimals = 3;
@@ -259,12 +349,34 @@ class Geneo{
 		return result;
 	}
 	
+	compatibilityCheck(dnaArray){
+		var result = true;
+		var length = dnaArray[0].length();
+		for (var i = 1; i < dnaArray.length; i++){
+		// TODO: finish this method
+		}
+	}
+	
 	mattingPool(FitnessArray,count){
-		result = [];
+		var result = [];
 		for (var i = 0; i < count; i++){
 			result.push(this.weightedRandom(fitnessArray));
 		}
 		return result;
+	}
+	
+	nextGeneration(dnaArray,fitnessArray){
+		var result = [];
+		var count = this.length;
+		var selectionPool = this.mattingPool(fitnessArray,count)
+		for (selection in selectionPool){
+			var parentArray = [];
+			for (index in selection){
+				parentArray.push(dnaArray[index]);
+			}
+			this.combine(parentArray) // TODO: Finish this method
+		}
+		
 	}
 	
 	weightedRandom(weightArray){
@@ -281,6 +393,3 @@ class Geneo{
 		}
 	}
 }
-
-// TODO: fitnessArray 
-// TODO: sort and comment whole code

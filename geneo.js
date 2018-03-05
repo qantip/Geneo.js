@@ -104,6 +104,7 @@ class Gen{
 }
 /**
 * Class for handling DNA informations
+* @class
 */
 class Dna{
 	/**
@@ -117,6 +118,12 @@ class Dna{
 			this.genes.push(new Gen());
 		}
 	}
+
+	/**
+	* Geting single Gen from DNA object
+	* @param {integer} index - gen index in DNA
+	* @returns {Gen}
+	*/
 	get(index){
 		return this.genes[index].get();
 	}

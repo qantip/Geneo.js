@@ -1,9 +1,9 @@
 class Gen{
 	constructor(value){
 		if (isNaN(value)){
-			throw new Error("Value is not a number");
+			this.value = 0;
 		} else {
-			this.setRaw(value);
+			this.set(value);
 		}
 		this.max = 1.0;
 		this.min = 0.0;
@@ -12,7 +12,7 @@ class Gen{
 	}
 
 	get(){
-		switch(this.mode){ // TODO Parent class
+		switch(this.mode){
 			case 0: // return float
 				return map(this.value,0,1,this.min,this.max);
 			case 1: // return integer
@@ -27,13 +27,8 @@ class Gen{
 	}
 
 	setRaw(input){
-		if ((input < 0) || (input > 1)){
-			throw new Error("input value not in range 0.0 to 1.0");
-		}
-		//console.log(input); // DEBUG
-		this.value = input;
+		this.value = constrain(input,0,1);
 	}
-
 
 	set(input){
 		this.value = map(input,this.min,this.max,0,1);
@@ -55,11 +50,9 @@ class Gen{
 
 	mutate (rate){
 		if (isNaN(rate)){
-			throw new Error("Gen.mutate(rate) argument is not a number.");
-			//rate = 1; // old
-		} else if((input < 0) || (input > 1)) {
-			throw new Error("Gen.mutate(rate) is not in range 0.0 to 1.0");
-			//rate = constrain(rate,0,1); // old
+			rate = 1;
+		} else {
+			rate = constrain(rate,0,1);
 		       }
 		if (this.wrap){
 			var minValue = this.getRaw() - rate;
@@ -95,7 +88,7 @@ class Gen{
 		var weightPick = Math.random()*weightSum;
 
 		// Dna copy of this
-		var result = new Gen(this.length); // mistake
+		var result = new Gen(this.length);
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
 		result.setWrap(this.wrap);
@@ -109,14 +102,28 @@ class Gen{
 
 	}
 }
-
+/**
+* Class for handling DNA informations
+* @class
+*/
 class Dna{
+	/**
+	* Constructor
+	* @constructor
+	* @param {integer} length - count of genes in DNA
+	*/
 	constructor(length){
 		this.genes = []
 		for(var i = 0; i < length; i++){
-			this.genes.push(new Gen(0));
+			this.genes.push(new Gen());
 		}
 	}
+
+	/**
+	* Geting single Gen from DNA object
+	* @param {integer} index - gen index in DNA
+	* @returns {Gen}
+	*/
 	get(index){
 		return this.genes[index].get();
 	}
@@ -162,22 +169,6 @@ class Dna{
 		}
 	}
 
-	combine2(dnaArray){ // NOT TESTED
-		console.log()
-		dnaArray.push(this);
-		var count = dnaArray.length;
-		var resultDna = new Dna(this.length);
-		resultDna.dnaMode = this.dnaMode;
-		resultDna.dnaWrap = this.dnaWrap;
-		resultDna.dnaRange = this.dnaRange;
-		for(var i = 0; i < resultDna.length(); i++){
-			var pick = floor(Math.random() * count);
-			var newValue = dnaArray[pick].getRaw();
-			resultDna.setRaw(newValue);
-		}
-		return resultDna;
-	}
-
 	combine(){ // NOT TESTED
 		arguments.push(this);
 		var count = arguments.length;
@@ -194,6 +185,26 @@ class Dna{
 			resultDna.setRaw(newValue);
 		}
 		return resultDna;
+	}
+
+	/**
+	* Combination of two or more DNA objects.
+	* @param {Array DNA} dnaArray - array of DNA objects (not including parent object)
+	*/
+	combine2(dnaArray){ // NOT TESTED
+		dnaArray.push(this);
+		// TODO: compatibilityCheck for DNA
+		var count = dnaArray.length;
+		var result = new DNA(this.length);
+		result.setMode(this.dnaMode);
+		result.setWrap(this.dnaWrap);
+		result.setRange(this.dnaRange);
+		for (var i = 0; i < result.length; i++){
+			var pick = floor(Math.random() * count);
+			var newValue = dnaArray[pick].getRaw;
+			result.setRaw(newValue);
+		}
+		return result;
 	}
 
 	blend(){ // NOT TESTED
@@ -281,12 +292,18 @@ class Geneo{
 				this.genRange = this.genRange.slice(0,newLength);
 			}
 		}
+		else{
+			throw new Error("Geneo.setDnaLength() atribute is < 0");
+		}
 	}
 
 	setGenWrap(index,wrap){
 		if (index < this.genLength){
 			this.genWrap[index] = wrap;
+		} else {
+			throw new Error("Geneo.setGenWrap() index atribute is off the length")
 		}
+
 	}
 
 	setAllWrap(wrap){
@@ -310,12 +327,16 @@ class Geneo{
 	setGenMode(index,mode){
 		if (index < this.genLength){
 			this.genMode[index] = mode;
+		} else {
+			throw new Error("Geneo.setGenMode() index atribute is off the length")
 		}
 	}
 
 	setGenRange(index,low,high){
 		if (index < this.genLength){
 			this.genRange[index] = {min:low, max:high};
+		} else {
+			throw new Error("Geneo.setGenRange() index atribute is off the length")
 		}
 	}
 

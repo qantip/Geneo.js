@@ -10,7 +10,7 @@ class Gen{
 		this.wrap = false;
 		this.mode = 0;
 	}
-	
+
 	get(){
 		switch(this.mode){
 			case 0: // return float
@@ -21,38 +21,38 @@ class Gen{
 					);
 		}
 	}
-	
+
 	getRaw(){
 		return this.value;
 	}
-	
+
 	setRaw(input){
 		this.value = constrain(input,0,1);
 	}
-	
+
 	set(input){
 		this.value = map(input,this.min,this.max,0,1);
 	}
-	
+
 	setRange(low,high){
 		this.min = low;
 		this.max = high;
 		//this.value = constrain(this.value,this.min,this.max);
 	}
-	
+
 	setWrap(bool){
 		this.wrap = bool;
 	}
-	
+
 	setMode(mode){
 		this.mode = mode;
 	}
-	
+
 	mutate (rate){
-		if (isNaN(rate)){ 
+		if (isNaN(rate)){
 			rate = 1;
-		} else { 
-			rate = constrain(rate,0,1); 
+		} else {
+			rate = constrain(rate,0,1);
 		       }
 		if (this.wrap){
 			var minValue = this.getRaw() - rate;
@@ -66,7 +66,7 @@ class Gen{
 		}
 		this.setRaw(newValue);
 	}
-	
+
 	orPick(){
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -74,8 +74,8 @@ class Gen{
 		console.log(args.length,pick);
 		return args[pick];
 	}
-	
-	
+
+
 	blend(genArray){
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -86,24 +86,31 @@ class Gen{
 			weightSum += weight[i];
 		}
 		var weightPick = Math.random()*weightSum;
-		
+
 		// Dna copy of this
 		var result = new Gen(this.length);
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
 		result.setWrap(this.wrap);
-		
+
 		var weightedValue = 0;
 		for (var i = 0; i < args.length; i++){
 			weightedValue += args[i].getRaw()*weight[i];
 		}
 		result.setRaw(weightedValue); // set new value
 		return result;
-		
+
 	}
 }
-
+/**
+* Class for handling DNA informations
+*/
 class Dna{
+	/**
+	* Constructor
+	* @constructor
+	* @param {integer} length - count of genes in DNA
+	*/
 	constructor(length){
 		this.genes = []
 		for(var i = 0; i < length; i++){
@@ -113,31 +120,31 @@ class Dna{
 	get(index){
 		return this.genes[index].get();
 	}
-	
+
 	getRaw(index){
 		return this.genes[index].getRaw();
 	}
-	
+
 	set(index, value){
 		this.genes[index].set(value);
 	}
-	
+
 	setRaw(index, value){
 		this.genes[index].setRaw(value);
 	}
-	
+
 	setWrap(index, bool){
 		this.genes[index].setWrap(bool);
 	}
-	
+
 	setRange(index, low, high){
 		this.genes[index].setRange(low, high);
 	}
-	
+
 	setMode(index, mode){
 		this.genes[index].setMode(mode);
 	}
-	
+
 	mutate(chance, rate){
 		for(var i = 0; i < this.genes.length; i++){
 			if (Math.random() <= chance){
@@ -145,7 +152,7 @@ class Dna{
 			}
 		}
 	}
-	
+
 	combineNew(){
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -154,7 +161,7 @@ class Dna{
 			// this.orPick(//);
 		}
 	}
-	
+
 	combine(){ // NOT TESTED
 		arguments.push(this);
 		var count = arguments.length;
@@ -173,6 +180,26 @@ class Dna{
 		return resultDna;
 	}
 
+	/**
+	* Combination of two or more DNA objects.
+	* @param {Array DNA} dnaArray - array of DNA objects (not including parent object)
+	*/
+	combine2(dnaArray){ // NOT TESTED
+		dnaArray.push(this);
+		// TODO: compatibilityCheck for DNA
+		var count = dnaArray.length;
+		var result = new DNA(this.length);
+		result.setMode(this.dnaMode);
+		result.setWrap(this.dnaWrap);
+		result.setRange(this.dnaRange);
+		for (var i = 0; i < result.length; i++){
+			var pick = floor(Math.random() * count);
+			var newValue = dnaArray[pick].getRaw;
+			result.setRaw(newValue);
+		}
+		return result;
+	}
+
 	blend(){ // NOT TESTED
 		arguments.push(this);
 		var count = arguments.length;
@@ -188,14 +215,14 @@ class Dna{
 				massAddition += weight[j];
 			}
 			for (var j = 0; j < arguments.length; j++){
-				newValue = 0; 
+				newValue = 0;
 				newValue = arguments[j].getRaw()*(weight/massAddition);
 			}
 		resultDna.setRaw(newValue);
 		}
 		return resultDna;
 	}
-	
+
 	echo(decimals){
 		if (decimals === undefined){
 			decimals = 3;
@@ -210,8 +237,8 @@ class Dna{
 		string = string.concat("]");
 		console.log(string);
 	}
-	
-	length(){ 
+
+	length(){
 		return this.genes.length;
 	}
 }
@@ -228,7 +255,7 @@ function constrain(number, low, high){
 	return Math.max(low, Math.min(number, high));
 }
 
-class Geneo{ 
+class Geneo{
 	constructor(){
 		this.genLength = 1;
 		this.genWrap = [false];
@@ -237,8 +264,8 @@ class Geneo{
 		this.setDnaLength(256); // default length
 		// This is a kind strange ... Could be done better
 
-	}	
-	
+	}
+
 	setDnaLength(newLength){
 		if (newLength > 0){
 			var oldLength = this.genLength;
@@ -256,64 +283,74 @@ class Geneo{
 				this.genWrap = this.genWrap.slice(0,newLength);
 				this.genMode = this.genMode.slice(0,newLength);
 				this.genRange = this.genRange.slice(0,newLength);
-			}			
+			}
+		}
+		else{
+			throw new Error("Geneo.setDnaLength() atribute is < 0");
 		}
 	}
-	
+
 	setGenWrap(index,wrap){
 		if (index < this.genLength){
 			this.genWrap[index] = wrap;
+		} else {
+			throw new Error("Geneo.setGenWrap() index atribute is off the length")
 		}
+
 	}
-	
+
 	setAllWrap(wrap){
 		for (var i = 0; i < this.genLength; i++){
 			this.genWrap[i] = wrap;
 		}
 	}
-	
+
 	setAllMode(mode){
 		for (var i = 0; i < this.genLength; i++){
 			this.genMode[i] = mode;
 		}
 	}
-	
+
 	setAllRange(low,high){
 		for (var i = 0; i < this.genLength; i++){
 			this.genRange[i] = {min:low, max:high};
 		}
 	}
-	
+
 	setGenMode(index,mode){
 		if (index < this.genLength){
 			this.genMode[index] = mode;
+		} else {
+			throw new Error("Geneo.setGenMode() index atribute is off the length")
 		}
 	}
-	
+
 	setGenRange(index,low,high){
 		if (index < this.genLength){
 			this.genRange[index] = {min:low, max:high};
+		} else {
+			throw new Error("Geneo.setGenRange() index atribute is off the length")
 		}
 	}
-	
+
 	newDna(){
 		var result = new Dna(this.genLength);
 		for (var i = 0; i < this.genLength; i++){
 			result.setWrap(i,this.genWrap[i]);
 			result.setRange(i,this.genRange[i].min,this.genRange[i].max);
-			result.setMode(i,this.genMode[i]); 
+			result.setMode(i,this.genMode[i]);
 		}
 		return result;
 	}
-	
+
 	randomDna(){
 		var result = this.newDna();
 		for(var i = 0; i < this.genLength; i++){
-			result.setRaw(i,Math.random()); 
+			result.setRaw(i,Math.random());
 		}
 		return result;
 	}
-	
+
 	newPopulation(count){
 		var result = []
 		for(var i = 0; i < count; i++){
@@ -321,7 +358,7 @@ class Geneo{
 		}
 		return result;
 	}
-	
+
 	combine(dnaArray){
 		if (this.lengthCheck(dnaArray)){
 			var parentCount = dnaArray.length;
@@ -337,7 +374,7 @@ class Geneo{
 			return result;
 		}
 	}
-	
+
 	lengthCheck(dnaArray){
 		var result = true;
 		var length = dnaArray[0].length();
@@ -348,7 +385,7 @@ class Geneo{
 		}
 		return result;
 	}
-	
+
 	compatibilityCheck(dnaArray){
 		var result = true;
 		var length = dnaArray[0].length();
@@ -356,7 +393,7 @@ class Geneo{
 		// TODO: finish this method
 		}
 	}
-	
+
 	mattingPool(FitnessArray,count){
 		var result = [];
 		for (var i = 0; i < count; i++){
@@ -364,7 +401,7 @@ class Geneo{
 		}
 		return result;
 	}
-	
+
 	nextGeneration(dnaArray,fitnessArray){
 		var result = [];
 		var count = this.length;
@@ -376,9 +413,9 @@ class Geneo{
 			}
 			this.combine(parentArray) // TODO: Finish this method
 		}
-		
+
 	}
-	
+
 	weightedRandom(weightArray){
 		var weightSum = 0;
 		for (var i = 0; i < weightArray.length; i++){

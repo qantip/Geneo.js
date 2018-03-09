@@ -1,9 +1,17 @@
+/**
+* Class for simulation of single gene in DNA
+* @class
+*/
 class Gen{
+	/**
+	* @constructor
+	* @param {float} value - initial value in range [0,1]
+	*/
 	constructor(value){
 		if (isNaN(value)){
-			this.value = 0;
+			throw new Error("Gen.constructor() atribute is not a number");
 		} else {
-			this.set(value);
+			this.setRaw(value);
 		}
 		this.max = 1.0;
 		this.min = 0.0;
@@ -11,6 +19,11 @@ class Gen{
 		this.mode = 0;
 	}
 
+	/**
+	 * Get phenotype value of gene
+	 *
+	 * @return {float}  phenotype value of gene
+	 */
 	get(){
 		switch(this.mode){
 			case 0: // return float
@@ -22,12 +35,21 @@ class Gen{
 		}
 	}
 
+	/**
+	 * Get raw value of gene
+	 *
+	 * @returns {float}  raw value
+	 */	 
 	getRaw(){
 		return this.value;
 	}
 
 	setRaw(input){
-		this.value = constrain(input,0,1);
+		if ((input < 0) || (input > 1)){
+			throw new Error("input value not in range [0, 1]");
+		}
+		//console.log(input); // DEBUG
+		this.value = input;
 	}
 
 	set(input){
@@ -48,11 +70,19 @@ class Gen{
 		this.mode = mode;
 	}
 
+
+	/**
+	 * mutate gene in requested rate
+	 * 	 0
+	 * @param  {float} rate max difference between old and new in percents in range [0,1]
+	 */
 	mutate (rate){
 		if (isNaN(rate)){
-			rate = 1;
-		} else {
-			rate = constrain(rate,0,1);
+			throw new Error("Gen.mutate(rate) argument is not a number.");
+			//rate = 1; // old
+		} else if((rate < 0) || (rate > 1)) {
+			throw new Error("Gen.mutate(rate) is not in range [0,1]");
+			//rate = constrain(rate,0,1); // old
 		       }
 		if (this.wrap){
 			var minValue = this.getRaw() - rate;
@@ -115,7 +145,7 @@ class Dna{
 	constructor(length){
 		this.genes = []
 		for(var i = 0; i < length; i++){
-			this.genes.push(new Gen());
+			this.genes.push(new Gen(0));
 		}
 	}
 
@@ -189,13 +219,13 @@ class Dna{
 
 	/**
 	* Combination of two or more DNA objects.
-	* @param {Array DNA} dnaArray - array of DNA objects (not including parent object)
+	* @param {Array Dna} dnaArray - array of DNA objects (not including parent object)
 	*/
 	combine2(dnaArray){ // NOT TESTED
 		dnaArray.push(this);
 		// TODO: compatibilityCheck for DNA
 		var count = dnaArray.length;
-		var result = new DNA(this.length);
+		var result = new Dna(this.length);
 		result.setMode(this.dnaMode);
 		result.setWrap(this.dnaWrap);
 		result.setRange(this.dnaRange);

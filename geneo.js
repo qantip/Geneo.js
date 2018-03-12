@@ -1,9 +1,18 @@
+/**
+* Class for elementry data handling. Simulation of nature gen.
+* @class
+*/
 class Gen{
+	/**
+	* Gen construtor
+	* @constructor
+	* @param {float} value - setting raw (in range 0.0 to 1.1) value of gen.
+	*/
 	constructor(value){
 		if (isNaN(value)){
-			this.value = 0;
+			throw new Error("Value is not a number");
 		} else {
-			this.set(value);
+			this.setRaw(value);
 		}
 		this.max = 1.0;
 		this.min = 0.0;
@@ -11,6 +20,10 @@ class Gen{
 		this.mode = 0;
 	}
 
+	/**
+	* Return phenotype value of gen (in range this.min to this.max).
+	* @returns {float|integer} value in range this.min to this.max interpolated by mode of gen.
+	*/
 	get(){
 		switch(this.mode){
 			case 0: // return float
@@ -19,41 +32,77 @@ class Gen{
 				return Math.round(
 					map(this.value,0,1,this.min,this.max)
 					);
-		}
 	}
 
+	/**
+	* Return raw value of gen (in range 0.0 to 1.0).
+	* @returns {float} value in range 0.0 to 1.0
+	*/
 	getRaw(){
 		return this.value;
 	}
 
+	/**
+	* Seting raw value of gen (in range 0.0 to 1.0).
+	* @param {float} input - raw value to set
+	*/
 	setRaw(input){
-		this.value = constrain(input,0,1);
-	}
+			if ((input < 0) || (input > 1)){
+				throw new Error("input value not in range 0.0 to 1.0");
+			}
+			//console.log(input); // DEBUG
+			this.value = input;
+		}
 
+	/**
+	* Seting phenotype value of gen (in range this.min to this.max)
+	*	@param {float} input - value to set
+	*/
 	set(input){
 		this.value = map(input,this.min,this.max,0,1);
 	}
 
+	/**
+	* Seting phenotype range of gen. Max and min value. By changing this range internal raw value will not change but interpolated Phenotype value will be different!
+	* @param {float} low - minimum value of phenotype (when raw value is equal to 0.0)
+	* @param {float} high - maximum value of phenotype (when raw value is equal to 1.0)
+	*/
 	setRange(low,high){
+		// TODO: raw value to change to keep phenotype value same
+		// TODO: maintain phenotype value out of low high when value will be reinterpolated
 		this.min = low;
 		this.max = high;
 		//this.value = constrain(this.value,this.min,this.max);
 	}
 
+	/**
+	* Setting-up wrap of gen. When wrap is True: there is a chance to mutate value from max to min. Values are in a imaginary loop where min value is just next to max value on one side.
+	* @param {boolean} bool - Enable / Disable wrap of gen.
+	*/
 	setWrap(bool){
 		this.wrap = bool;
 	}
 
+	/**
+	* Setting phenotype mode of gen. 0 - float, 1 - integer.
+	* @param {integer} mode - mode mumber
+	*/
 	setMode(mode){
+		// TODO: Mode control - to be only possible values
 		this.mode = mode;
 	}
 
+	/**
+	* Random change of gen value.
+	*	@param {float} rate - Max perecentage of value change in range 0.0 to 1.0
+	*/
 	mutate (rate){
 		if (isNaN(rate)){
-			rate = 1;
-		} else {
-			rate = constrain(rate,0,1);
-		       }
+			throw new Error("Gen.mutate(rate) argument is not a number.");
+		} else if((input < 0) || (input > 1)) {
+			throw new Error("Gen.mutate(rate) is not in range 0.0 to 1.0");
+		}
+
 		if (this.wrap){
 			var minValue = this.getRaw() - rate;
 			var maxValue = this.getRaw() + rate;
@@ -67,6 +116,10 @@ class Gen{
 		this.setRaw(newValue);
 	}
 
+	/**
+	* Returns one (unchanged) gen, randomly selected.
+	*	@returns {Gen} Picked gen
+	*/
 	orPick(){
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -75,7 +128,11 @@ class Gen{
 		return args[pick];
 	}
 
-
+	/**
+	* Blending two or more genes together.
+	*	@param {Gen[]} genArray - Array of genes to blend together. Excluding parent gen.
+	* @returns {Gen} Blended gen
+	*/
 	blend(genArray){
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -88,7 +145,7 @@ class Gen{
 		var weightPick = Math.random()*weightSum;
 
 		// Dna copy of this
-		var result = new Gen(this.length);
+		var result = new Gen(this.length); // mistake
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
 		result.setWrap(this.wrap);
@@ -99,18 +156,18 @@ class Gen{
 		}
 		result.setRaw(weightedValue); // set new value
 		return result;
-
 	}
 }
+
 /**
-* Class for handling DNA informations
+* Class for handling DNA informations. Each Dna object contains multiple Gen objects.
 * @class
 */
 class Dna{
 	/**
 	* Constructor
 	* @constructor
-	* @param {integer} length - count of genes in DNA
+	* @param {integer} length - count of genes in Dna
 	*/
 	constructor(length){
 		this.genes = []
@@ -120,9 +177,9 @@ class Dna{
 	}
 
 	/**
-	* Geting single Gen from DNA object
-	* @param {integer} index - gen index in DNA
-	* @returns {Gen}
+	* Geting single Gen phenotype value from Dna object
+	* @param {integer} index - gen index in Dna
+	* @returns {float|integer} selected gen value in range gen.min to gen.max interpolated by mode of gen.
 	*/
 	get(index){
 		return this.genes[index].get();

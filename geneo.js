@@ -1,15 +1,16 @@
 /**
-* Class for simulation of single gene in DNA
+* Class for elementry data handling. Simulation of signle gen behaviour.
 * @class
 */
 class Gen{
 	/**
+	* Gen construtor
 	* @constructor
-	* @param {float} value - initial value in range [0,1]
+	* @param {float} value - setting raw (in range 0.0 to 1.1) value of gen.
 	*/
 	constructor(value){
 		if (isNaN(value)){
-			throw new Error("Gen.constructor() atribute is not a number");
+			throw new Error("Value is not a number");
 		} else {
 			this.setRaw(value);
 		}
@@ -20,10 +21,9 @@ class Gen{
 	}
 
 	/**
-	 * Get phenotype value of gene
-	 *
-	 * @return {float}  phenotype value of gene
-	 */
+	* Return phenotype value of gen (in range this.min to this.max).
+	* @returns {float|integer} value in range this.min to this.max interpolated by mode of gen.
+	*/
 	get(){
 		switch(this.mode){
 			case 0: // return float
@@ -36,54 +36,74 @@ class Gen{
 	}
 
 	/**
-	 * Get raw value of gene
-	 *
-	 * @returns {float}  raw value
-	 */	 
+	* Return raw value of gen (in range 0.0 to 1.0).
+	* @returns {float} value in range 0.0 to 1.0
+	*/
 	getRaw(){
 		return this.value;
 	}
 
+	/**
+	* Seting raw value of gen (in range 0.0 to 1.0).
+	* @param {float} input - raw value to set
+	*/
 	setRaw(input){
-		if ((input < 0) || (input > 1)){
-			throw new Error("input value not in range [0, 1]");
+			if ((input < 0) || (input > 1)){
+				throw new Error("input value not in range 0.0 to 1.0");
+			}
+			//console.log(input); // DEBUG
+			this.value = input;
 		}
-		//console.log(input); // DEBUG
-		this.value = input;
-	}
 
+	/**
+	* Seting phenotype value of gen (in range this.min to this.max)
+	*	@param {float} input - value to set
+	*/
 	set(input){
 		this.value = map(input,this.min,this.max,0,1);
 	}
 
+	/**
+	* Seting phenotype range of gen. Max and min value. By changing this range internal raw value will not change but interpolated Phenotype value will be different!
+	* @param {float} low - minimum value of phenotype (when raw value is equal to 0.0)
+	* @param {float} high - maximum value of phenotype (when raw value is equal to 1.0)
+	*/
 	setRange(low,high){
+		// TODO: raw value to change to keep phenotype value same
+		// TODO: maintain phenotype value out of low high when value will be reinterpolated
 		this.min = low;
 		this.max = high;
 		//this.value = constrain(this.value,this.min,this.max);
 	}
 
+	/**
+	* Setting-up wrap of gen. When wrap is True: there is a chance to mutate value from max to min. Values are in a imaginary loop where min value is just next to max value on one side.
+	* @param {boolean} bool - Enable / Disable wrap of gen.
+	*/
 	setWrap(bool){
 		this.wrap = bool;
 	}
 
+	/**
+	* Setting phenotype mode of gen. 0 - float, 1 - integer.
+	* @param {integer} mode - mode mumber
+	*/
 	setMode(mode){
+		// TODO: Mode control - to be only possible values
 		this.mode = mode;
 	}
 
-
 	/**
-	 * mutate gene in requested rate
-	 * 	 0
-	 * @param  {float} rate max difference between old and new in percents in range [0,1]
-	 */
+	* Random change of gen value.
+	*	@param {float} rate - Max perecentage of value change in range 0.0 to 1.0
+	*/
 	mutate (rate){
 		if (isNaN(rate)){
 			throw new Error("Gen.mutate(rate) argument is not a number.");
-			//rate = 1; // old
 		} else if((rate < 0) || (rate > 1)) {
-			throw new Error("Gen.mutate(rate) is not in range [0,1]");
-			//rate = constrain(rate,0,1); // old
-		       }
+			throw new Error("Gen.mutate(rate) is not in range 0.0 to 1.0");
+		}
+
 		if (this.wrap){
 			var minValue = this.getRaw() - rate;
 			var maxValue = this.getRaw() + rate;
@@ -97,7 +117,13 @@ class Gen{
 		this.setRaw(newValue);
 	}
 
+	/**
+	* Returns one (unchanged) gen, randomly selected.
+	*	@returns {Gen} Picked gen
+	*/
 	orPick(){
+		// TODO: Make it array input not args
+		// if (Array.isArray(somebody)) {
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
 		var pick = Math.floor(Math.random()*args.length);
@@ -105,8 +131,13 @@ class Gen{
 		return args[pick];
 	}
 
-
+	/**
+	* Blending two or more genes together.
+	*	@param {Gen[]} genArray - Array of genes to blend together. Excluding parent gen.
+	* @returns {Gen} Blended gen
+	*/
 	blend(genArray){
+		// if (Array.isArray(somebody)) {
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
 		var weight = [];
@@ -118,7 +149,8 @@ class Gen{
 		var weightPick = Math.random()*weightSum;
 
 		// Dna copy of this
-		var result = new Gen(this.length);
+		// TODO: use Dna.copy() once it's done
+		var result = new Gen(this.length); // TODO: mistake
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
 		result.setWrap(this.wrap);
@@ -129,18 +161,48 @@ class Gen{
 		}
 		result.setRaw(weightedValue); // set new value
 		return result;
+	}
 
+	/**
+	 * Checks  
+	 **/
+	compatibleWith(genArray){
+		if (!(genArray instanceof Array)){
+			genArray = [genArray]
+		}
+		for (var i = 0; i < genArray.length; i++){
+			if (!(genArray[i].mode === this.mode)){ return false; }
+			if (!(genArray[i].wrap === this.wrap)){ return false; }
+			if (!(genArray[i].min === this.min)){ return false; }
+			if (!(genArray[i].max === this.max)){ return false; }
+		}
+		return true;
+	}
+	/**
+	* Returns copy of itself
+	* @returns {Gen} copy
+	*/
+	copy(){
+		// NOT TESTED
+		var result = new Gen(this.getRaw());
+		result.setWrap(this.wrap);
+		result.setMode(this.mode);
+		result.setRange(this.min,this.max);
+		return result;
 	}
 }
-/**
-* Class for handling DNA informations
+
+
+
+/*******************************************************************************
+* Class for handling DNA informations. Each Dna object contains multiple Gen objects.
 * @class
 */
 class Dna{
 	/**
-	* Constructor
+	* Dna class constructor
 	* @constructor
-	* @param {integer} length - count of genes in DNA
+	* @param {integer} length - count of genes in Dna
 	*/
 	constructor(length){
 		this.genes = []
@@ -150,9 +212,9 @@ class Dna{
 	}
 
 	/**
-	* Geting single Gen from DNA object
-	* @param {integer} index - gen index in DNA
-	* @returns {Gen}
+	* Geting single Gen phenotype value from Dna object
+	* @param {integer} index - gen index in Dna
+	* @returns {float | integer} selected gen value in range gen.min to gen.max interpolated by mode of gen.
 	*/
 	get(index){
 		return this.genes[index].get();
@@ -160,6 +222,10 @@ class Dna{
 
 	getRaw(index){
 		return this.genes[index].getRaw();
+	}
+
+	getGen(index){
+		return this.genes[index].copy();
 	}
 
 	set(index, value){
@@ -182,6 +248,10 @@ class Dna{
 		this.genes[index].setMode(mode);
 	}
 
+	setGen(index, gen){
+		this.genes[index] = gen;
+	}
+
 	mutate(chance, rate){
 		for(var i = 0; i < this.genes.length; i++){
 			if (Math.random() <= chance){
@@ -190,77 +260,47 @@ class Dna{
 		}
 	}
 
-	combineNew(){
-		var args = Array.prototype.slice.call(arguments)
-		args.push(this);
-		for(var i = 0; i < this.length(); i++){
-			// I have no idea how to make something like function(arg1,arg2, .. ,argN) ... I can do it by Array, which means to rewrite Gen.orPick()
-			// this.orPick(//);
-		}
-	}
-
-	combine(){ // NOT TESTED
-		arguments.push(this);
-		var count = arguments.length;
-		var resultDna = new Dna(this.length);
-		resultDna.dnaMode = this.dnaMode;
-		resultDna.dnaWrap = this.dnaWrap;
-		resultDna.dnaRange = this.dnaRange;
-		for (var i = 0; i < resultDna.length; i++){
-			var pick = floor(Math.random() * count);
-			var newValue = arguments[pick].getRaw();
-			if(isNaN(newValue)){
-				newValue = 0;
-			}
-			resultDna.setRaw(newValue);
-		}
-		return resultDna;
-	}
-
 	/**
 	* Combination of two or more DNA objects.
-	* @param {Array Dna} dnaArray - array of DNA objects (not including parent object)
+	* @param {Array DNA | DNA} dnaArray - array of DNA objects (not including parent object)
 	*/
-	combine2(dnaArray){ // NOT TESTED
+	combine(dnaArray){
+		if (!(dnaArray instanceof Array)){
+			dnaArray = [dnaArray]
+		}
 		dnaArray.push(this);
-		// TODO: compatibilityCheck for DNA
+		// TODO: compatibilityCheck
 		var count = dnaArray.length;
-		var result = new Dna(this.length);
-		result.setMode(this.dnaMode);
-		result.setWrap(this.dnaWrap);
-		result.setRange(this.dnaRange);
-		for (var i = 0; i < result.length; i++){
-			var pick = floor(Math.random() * count);
-			var newValue = dnaArray[pick].getRaw;
-			result.setRaw(newValue);
+		var dnaLength = this.length();
+		var result = new Dna(dnaLength);
+		for (var i = 0; i < dnaLength; i++){
+			var pick = Math.floor(Math.random() * count);
+			console.log(pick);
+			result.setRaw(i, dnaArray[pick].getRaw(i) );
 		}
 		return result;
 	}
 
-	blend(){ // NOT TESTED
-		arguments.push(this);
-		var count = arguments.length;
-		var resultDna = new Dna(this.length);
-		resultDna.dnaMode = this.dnaMode;
-		resultDna.dnaWrap = this.dnaWrap;
-		resultDna.dnaRange = this.dnaRange;
-		for (var i = 0; i < resultDna.length; i++){
-			var massAddition = 0;
-			var weight = [];
-			for (var j = 0; j < arguments.length; j++){
-				weight.push(Math.random());
-				massAddition += weight[j];
-			}
-			for (var j = 0; j < arguments.length; j++){
-				newValue = 0;
-				newValue = arguments[j].getRaw()*(weight/massAddition);
-			}
-		resultDna.setRaw(newValue);
+	blend(dna){
+		// TODO: compatibilityCheck
+		var result = new Dna(this.length());
+		result.dnaMode = this.dnaMode;
+		result.dnaWrap = this.dnaWrap;
+		result.dnaRange = this.dnaRange;
+		for (var i = 0; i < this.length(); i++){
+			var ratio = Math.random();
+			var value = this.getRaw(i)*ratio + dna.getRaw(i)*(1-ratio);
+			result.setRaw(i,value);
 		}
-		return resultDna;
+		return result;
 	}
 
+	/**
+	* Debug printout of dna values
+	* @param {integer} decimals - count of decimals
+	*/
 	echo(decimals){
+		// TODO: Something wrong with decimals
 		if (decimals === undefined){
 			decimals = 3;
 		}
@@ -275,16 +315,32 @@ class Dna{
 		console.log(string);
 	}
 
+	/**
+	* Return amount of genes in Dna objects.
+	* @returns {integer} count of Genes
+	*/
 	length(){
 		return this.genes.length;
+	}
+
+	/**
+	* Returns copy of itself. Genes are also transformed as copy not reference.
+	* @returns {Dna} copy
+	*/
+	copy() {
+		var result = new Dna(this.length());
+		for (var i = 0; i < this.length(); i++){
+			result.setGen(i,this.getGen(i));
+		}
+		return result;
 	}
 }
 
 function map(number, low, high, newLow, newHigh){
 	if (low == high){
-		return low
+		return low;
 	}
-	number = constrain(number,low,high);
+	var number = constrain(number,low,high);
 	return ( ( (number - low)/(high - low) ) * (newHigh - newLow) + newLow );
 }
 
@@ -292,6 +348,11 @@ function constrain(number, low, high){
 	return Math.max(low, Math.min(number, high));
 }
 
+
+/******************************************************************************
+* Class for advanced working with DNA populations.
+* @class
+*/
 class Geneo{
 	constructor(){
 		this.genLength = 1;
@@ -349,6 +410,7 @@ class Geneo{
 	}
 
 	setAllRange(low,high){
+		// TODO: Low high swicth
 		for (var i = 0; i < this.genLength; i++){
 			this.genRange[i] = {min:low, max:high};
 		}
@@ -381,7 +443,7 @@ class Geneo{
 	}
 
 	randomDna(){
-		var result = this.newDna();
+		var result = this.newDna(0);
 		for(var i = 0; i < this.genLength; i++){
 			result.setRaw(i,Math.random());
 		}
@@ -465,5 +527,10 @@ class Geneo{
 				return i
 			}
 		}
+	}
+
+	dnaLength(){
+		return this.genLength;
+		// Not sure about it
 	}
 }

@@ -164,7 +164,7 @@ class Gen{
 	}
 
 	/**
-	 * Checks  
+	 * Checks
 	 **/
 	compatibleWith(genArray){
 		if (!(genArray instanceof Array)){
@@ -336,19 +336,6 @@ class Dna{
 	}
 }
 
-function map(number, low, high, newLow, newHigh){
-	if (low == high){
-		return low;
-	}
-	var number = constrain(number,low,high);
-	return ( ( (number - low)/(high - low) ) * (newHigh - newLow) + newLow );
-}
-
-function constrain(number, low, high){
-	return Math.max(low, Math.min(number, high));
-}
-
-
 /******************************************************************************
 * Class for advanced working with DNA populations.
 * @class
@@ -493,10 +480,10 @@ class Geneo{
 		}
 	}
 
-	mattingPool(FitnessArray,count){
+	getMattingPool(FitnessArray,count){
 		var result = [];
 		for (var i = 0; i < count; i++){
-			result.push(this.weightedRandom(fitnessArray));
+			result.push(weightedRandom(fitnessArray));
 		}
 		return result;
 	}
@@ -504,7 +491,7 @@ class Geneo{
 	nextGeneration(dnaArray,fitnessArray){
 		var result = [];
 		var count = this.length;
-		var selectionPool = this.mattingPool(fitnessArray,count)
+		var selectionPool = this.getMattingPool(fitnessArray,count)
 		for (selection in selectionPool){
 			var parentArray = [];
 			for (index in selection){
@@ -512,25 +499,58 @@ class Geneo{
 			}
 			this.combine(parentArray) // TODO: Finish this method
 		}
-
 	}
 
-	weightedRandom(weightArray){
-		var weightSum = 0;
-		for (var i = 0; i < weightArray.length; i++){
-			weightSum += weightArray[i];
+	evaluateFitness(dnaArray, fitnessFunction){ // NOT TESTED
+		fitness = [];
+		for (var i = 0; i < dnaArray.length; i++){
+			fitness.push(fitnessFunction(dnaArray[i]));
 		}
-		var pick = Math.random() * weightSum;
-		for (var i = 0; i < weightArray.length; i++){
-			weightSum -= weightArray[i];
-			if (weightSum <= 0){
-				return i
-			}
+		return fitness;
+	}
+
+	getChildren(dnaArray, fitnessFunction){ // Should replace nextGeneration()
+		var fitness = evaluateFitness(dnaArray, fitnessFunction);
+		var nextDnaArray = [];
+		var count = dnaArray.length;
+		var father = this.getMattingPool(fitnessArray, count);
+		var mother = this.getMattingPool(fitnessArray, count);
+		for (var i = 0; i < count; i++){
+			nextDnaArray.push(dnaArray[father[i]].blend(dnaArray[mother[i]]));
 		}
+		return nextDnaArray;
 	}
 
 	dnaLength(){
 		return this.genLength;
 		// Not sure about it
+	}
+}
+
+/****************************************************************/
+
+function map(number, low, high, newLow, newHigh){
+	if (low == high){
+		return low;
+	}
+	var number = constrain(number,low,high);
+	return ( ( (number - low)/(high - low) ) * (newHigh - newLow) + newLow );
+}
+
+function constrain(number, low, high){
+	return Math.max(low, Math.min(number, high));
+}
+
+function weightedRandom(weightArray){
+	var weightSum = 0.0;
+	for (var i = 0; i < weightArray.length; i++){
+		weightSum += weightArray[i];
+	}
+	var pick = Math.random() * weightSum;
+	for (var i = 0; i < weightArray.length; i++){
+		pick -= weightArray[i];
+		if (pick <= 0){
+			return i
+		}
 	}
 }

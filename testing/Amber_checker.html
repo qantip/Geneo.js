@@ -23,7 +23,7 @@
     g.setGenRange(6,0,100);
     console.log("empty Dna with default decimals count");
     d = g.newDna();
-    d.echo();
+    d.echo(4);
     console.log("random Dna with 4 decimals");
     e = d.copy();
     e.mutate(1,1);
@@ -74,21 +74,10 @@
     d.echo();
     e.mutate(1,1);
     e.echo();
+    console.log("upper DNAs should be different:");
     f = e.combine(d);
     f.echo();
-
-    for (var i = 0; i < e.length(); i++){
-      e.setRaw(i,0.7);
-    }
-
-    for (var i = 0; i < d.length(); i++){
-      d.setRaw(i,0.6);
-    }
-
-
-    f = d.blend(e);
-    f.echo();
-
+    console.log("combination of upper 2 DNAs");
   </script>
 </body>
 </html>

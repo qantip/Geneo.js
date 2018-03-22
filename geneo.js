@@ -1,4 +1,12 @@
 /**
+* @file Main library of classes and function for evolutionary equations.
+* @author Lukáš Matěja
+* @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
+* @version 0.3.22
+* @see {@link https://github.com/qantip/Geneo.js | Github }
+*/
+
+/**
 * Class for elementry data handling. Simulation of signle gen behaviour.
 * @class
 */
@@ -87,6 +95,7 @@ class Gen{
 	/**
 	* Setting phenotype mode of gen. 0 - float, 1 - integer.
 	* @param {integer} mode - mode mumber
+	* @todo mode control
 	*/
 	setMode(mode){
 		// TODO: Mode control - to be only possible values
@@ -162,6 +171,7 @@ class Gen{
 		result.setRaw(weightedValue); // set new value
 		return result;
 	}
+
 
  /**
   * Checks compatibility with another gen
@@ -344,6 +354,10 @@ class Dna{
 * @class
 */
 class Geneo{
+	/**
+	* Constructor
+	* @constructor
+	*/
 	constructor(){
 		this.genLength = 1;
 		this.genWrap = [false];
@@ -354,6 +368,10 @@ class Geneo{
 
 	}
 
+	/**
+	*
+	*
+	*/
 	setDnaLength(newLength){
 		if (newLength > 0){
 			var oldLength = this.genLength;
@@ -378,6 +396,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	setGenWrap(index,wrap){
 		if (index < this.genLength){
 			this.genWrap[index] = wrap;
@@ -387,18 +409,30 @@ class Geneo{
 
 	}
 
+	/**
+	*
+	*
+	*/
 	setAllWrap(wrap){
 		for (var i = 0; i < this.genLength; i++){
 			this.genWrap[i] = wrap;
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	setAllMode(mode){
 		for (var i = 0; i < this.genLength; i++){
 			this.genMode[i] = mode;
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	setAllRange(low,high){
 		// TODO: Low high swicth
 		for (var i = 0; i < this.genLength; i++){
@@ -406,6 +440,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	setGenMode(index,mode){
 		if (index < this.genLength){
 			this.genMode[index] = mode;
@@ -414,6 +452,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	setGenRange(index,low,high){
 		if (index < this.genLength){
 			this.genRange[index] = {min:low, max:high};
@@ -422,6 +464,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	newDna(){
 		var result = new Dna(this.genLength);
 		for (var i = 0; i < this.genLength; i++){
@@ -432,6 +478,10 @@ class Geneo{
 		return result;
 	}
 
+	/**
+	*
+	*
+	*/
 	randomDna(){
 		var result = this.newDna(0);
 		for(var i = 0; i < this.genLength; i++){
@@ -440,6 +490,10 @@ class Geneo{
 		return result;
 	}
 
+	/**
+	*
+	*
+	*/
 	newPopulation(count){
 		var result = []
 		for(var i = 0; i < count; i++){
@@ -448,6 +502,10 @@ class Geneo{
 		return result;
 	}
 
+	/**
+	*
+	*
+	*/
 	combine(dnaArray){
 		if (this.lengthCheck(dnaArray)){
 			var parentCount = dnaArray.length;
@@ -464,6 +522,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	lengthCheck(dnaArray){
 		var result = true;
 		var length = dnaArray[0].length();
@@ -475,6 +537,10 @@ class Geneo{
 		return result;
 	}
 
+	/**
+	*
+	*
+	*/
 	compatibilityCheck(dnaArray){
 		var result = true;
 		var length = dnaArray[0].length();
@@ -483,7 +549,12 @@ class Geneo{
 		}
 	}
 
-	getMattingPool(fitnessArray,count){
+	/**
+	*
+	*
+	*/
+	getMattingPool(FitnessArray,count){
+
 		var result = [];
 		for (var i = 0; i < count; i++){
 			result.push(weightedRandom(fitnessArray));
@@ -491,7 +562,11 @@ class Geneo{
 		return result;
 	}
 
-	nextGenerationOld(dnaArray,fitnessArray){
+	/**
+	*
+	*
+	*/
+	nextGeneration(dnaArray,fitnessArray){
 		var result = [];
 		var count = this.length;
 		var selectionPool = this.getMattingPool(fitnessArray,count)
@@ -504,6 +579,10 @@ class Geneo{
 		}
 	}
 
+	/**
+	*
+	*
+	*/
 	evaluateFitness(dnaArray, fitnessFunction){ // NOT TESTED
 		var fitness = [];
 		for (var i = 0; i < dnaArray.length; i++){
@@ -512,6 +591,10 @@ class Geneo{
 		return fitness;
 	}
 
+	/**
+	*
+	*
+	*/
 	nextGeneration(dnaArray, fitnessFunction){ // Should replace nextGeneration()
 		var fitnessArray = this.evaluateFitness(dnaArray, fitnessFunction);
 		var nextDnaArray = [];
@@ -524,6 +607,10 @@ class Geneo{
 		return nextDnaArray;
 	}
 
+	/**
+	* Returns length of Dna (count of genes in Dna) managed by Geneo object
+	* @returns {integer} Number
+	*/
 	dnaLength(){
 		return this.genLength;
 		// Not sure about it
@@ -532,6 +619,15 @@ class Geneo{
 
 /****************************************************************/
 
+/**
+* Map values from one range to another
+* @param {float} number - Number to remap
+* @param {float} low - minimum of original domain
+* @param {float} high - maximum of original domain
+* @param {float} newLow - minimum of target domain
+* @param {float} newHight - maximum of targer domain
+* @returns {float} remaped value to target domain
+*/
 function map(number, low, high, newLow, newHigh){
 	if (low == high){
 		return low;
@@ -540,10 +636,22 @@ function map(number, low, high, newLow, newHigh){
 	return ( ( (number - low)/(high - low) ) * (newHigh - newLow) + newLow );
 }
 
+/**
+* Limit the number to domain
+* @param {float} number - number to remap
+* @param {float} low - minimum limit number
+* @param {float} high - maximum limit number
+* @returns {float} - number
+*/
 function constrain(number, low, high){
 	return Math.max(low, Math.min(number, high));
 }
 
+/**
+* Returns weighted random index based on value in Array
+* @param {float[]} weightArray - Array of (positive) numeric values
+* @returns {integer} (weighted) random index from array
+*/
 function weightedRandom(weightArray){
 	var weightSum = 0.0;
 	for (var i = 0; i < weightArray.length; i++){

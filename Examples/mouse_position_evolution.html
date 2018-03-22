@@ -2,18 +2,16 @@
 <head>
   <title>Mouse pos evolution | Geneo</title>
   <script src="../geneo.js"></script>
-  <script>
-    function evo(){ console.log("heya"); }
-  </script>
 </head>
 <body style="padding:0; margin:0;">
-  <canvas id="canvas" onclick="evo()" style="border:0; margin:0; padding:0; width:100%; height:100%;"></canvas>
+  <canvas id="canvas" style="border:0; background-color: #000000; margin:0; padding:0; width:100%; height:100%;"></canvas>
   <script>
   function fitnessByMouseDistance(x,y){
     xdif = event.clientX - x;
     ydif = event.clientY - y;
     dist = Math.pow(Math.pow(xdif,2) + Math.pow(ydif,2),.5);
     return 1/dist;
+  }
 
     function display(dnaArray){
       for (var i = 0; i < dnaArray.length; i++){
@@ -21,20 +19,24 @@
       }
     }
 
-    function evo(){
-      console.log("jo");
-    }
+    document.getElementById("canvas").addEventListener("click", myFunction);
+    console.log("added");
+
 
     geneo = new Geneo();
-    geneo.setLength(2);
-    geneo.setGenRannge(0,0,window.innerWidth);
-    geneo.setGenRannge(0,0,window.innerHeight);
+    geneo.setDnaLength(2);
+    geneo.setGenRange(0,0,window.innerWidth);
+    geneo.setGenRange(0,0,window.innerHeight);
 
-    population = geneo.newPopulation(50);
+    var population = geneo.newPopulation(50);
     display(population);
 
+    function myFunction() {
+      console.log("done");
+      population = geneo.nextGeneration(population,fitnessByMouseDistance);
+      display(population);
+    }
 
-  }
   </script>
 </body>
 </html>

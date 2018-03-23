@@ -18,7 +18,7 @@ class Gen{
 	*/
 	constructor(value){
 		if (isNaN(value)){
-			throw new Error("Value is not a number");
+			throw new Error("Gen.constructor(): argument is not a number");
 		} else {
 			this.setRaw(value);
 		}
@@ -49,6 +49,26 @@ class Gen{
 	*/
 	getRaw(){
 		return this.value;
+	}
+
+	getMode(){
+		return this.mode;
+	}
+
+	getWrap(){
+		return this.wrap;
+	}
+
+	getRange(){
+		return [this.min, this.max];
+	}
+
+	getMin(){
+		return this.min;
+	}
+
+	getMax(){
+		return this.max;
 	}
 
 	/**
@@ -142,10 +162,17 @@ class Gen{
 
 	/**
 	* Blending two or more genes together.
-	*	@param {Gen[]} genArray - Array of genes to blend together. Excluding parent gen.
+	*	@param {Gen} gen - gen to blend with
 	* @returns {Gen} Blended gen
 	*/
-	blend(genArray){
+	blend(gen){
+		var result = this.copy();
+		var ratio = Math.random();
+		result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
+		return result;
+	}
+
+	blendOld(genArray){
 		// if (Array.isArray(somebody)) {
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
@@ -159,7 +186,7 @@ class Gen{
 
 		// Dna copy of this
 		// TODO: use Dna.copy() once it's done
-		var result = new Gen(this.length); // TODO: mistake
+		var result = new Gen(0);
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
 		result.setWrap(this.wrap);
@@ -241,6 +268,26 @@ class Dna{
 		return this.genes[index].copy();
 	}
 
+	getMode(index){
+		return this.genes[index].getMode();
+	}
+
+	getWrap(index){
+		return this.genes[index].getWrap();
+	}
+
+	getRange(index){
+		return this.genes[index].getRange();
+	}
+
+	getMax(index){
+		return this.genes[index].getMax();
+	}
+
+	getMin(index){
+		return this.genes[index].getMin();
+	}
+
 	set(index, value){
 		this.genes[index].set(value);
 	}
@@ -288,23 +335,42 @@ class Dna{
 		var result = new Dna(dnaLength);
 		for (var i = 0; i < dnaLength; i++){
 			var pick = Math.floor(Math.random() * count);
-			console.log(pick);
+			//console.log(pick);
 			result.setRaw(i, dnaArray[pick].getRaw(i) );
 		}
 		return result;
 	}
 
+	/**
+	*
+	*
+	*/
 	blend(dna){
+		var result = this.copy();
+		for (var i = 0; i < result.length(); i++){
+			result.genes[i] = this.genes[i].blend(dna.genes[i])
+		}
+		//console.log("1:",this,"\n2:",dna,"\n1+2:",result);
+		return result;
+	}
+
+	blendOld(dna){
 		// TODO: compatibilityCheck
 		var result = new Dna(this.length());
-		result.dnaMode = this.dnaMode;
-		result.dnaWrap = this.dnaWrap;
-		result.dnaRange = this.dnaRange;
+		for (var i = 0; i < this.lenght; i++){
+			result.setMode(i,this.getMode(i));
+			result.setWrap(i,this.getWrap(i));
+			result.setRange(i,this.getMin(i),this.getMax(i));
+		}
 		for (var i = 0; i < this.length(); i++){
 			var ratio = Math.random();
 			var value = this.getRaw(i)*ratio + dna.getRaw(i)*(1-ratio);
+			// TODO: why not Gen.blend()?
+			//console.log(value);
 			result.setRaw(i,value);
+			//console.log("Fen:",result.get(i));
 		}
+		//console.log("1:",this,"\n2:",dna,"\n1+2:",result);
 		return result;
 	}
 
@@ -483,7 +549,7 @@ class Geneo{
 	*
 	*/
 	randomDna(){
-		var result = this.newDna(0);
+		var result = this.newDna();
 		for(var i = 0; i < this.genLength; i++){
 			result.setRaw(i,Math.random());
 		}
@@ -553,8 +619,7 @@ class Geneo{
 	*
 	*
 	*/
-	getMattingPool(FitnessArray,count){
-
+	getMattingPool(fitnessArray,count){
 		var result = [];
 		for (var i = 0; i < count; i++){
 			result.push(weightedRandom(fitnessArray));
@@ -586,8 +651,10 @@ class Geneo{
 	evaluateFitness(dnaArray, fitnessFunction){ // NOT TESTED
 		var fitness = [];
 		for (var i = 0; i < dnaArray.length; i++){
-			fitness.push(fitnessFunction(dnaArray[i]));
+			//console.log(dnaArray[i].get(0),dnaArray[i].get(1));
+			fitness.push(fitnessFunction(dnaArray[i].get(0),dnaArray[i].get(1)));
 		}
+	 	//console.log(fitness);
 		return fitness;
 	}
 
@@ -601,6 +668,7 @@ class Geneo{
 		var count = dnaArray.length;
 		var father = this.getMattingPool(fitnessArray, count);
 		var mother = this.getMattingPool(fitnessArray, count);
+		//console.log(father,mother);
 		for (var i = 0; i < count; i++){
 			nextDnaArray.push(dnaArray[father[i]].blend(dnaArray[mother[i]]));
 		}

@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.3.22
+* @version 0.3.27
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 */
 
@@ -51,22 +51,42 @@ class Gen{
 		return this.value;
 	}
 
+	/**
+	* Returns mode number of Gene
+	* @returns {integer} mode number
+	*/
 	getMode(){
 		return this.mode;
 	}
 
+	/**
+	* Returns if value wrap is enabled or not.
+	* @returns {boolean} wrap enabled
+	*/
 	getWrap(){
 		return this.wrap;
 	}
 
+	/**
+	* Returns Range of phenotype of Gene.
+	* @returns {float[]} [Bottom limit, Top limit]
+	*/
 	getRange(){
 		return [this.min, this.max];
 	}
 
+	/**
+	* Returns minimum phenotype value of Gene.
+	* @returns {float} phenotype minimum
+	*/
 	getMin(){
 		return this.min;
 	}
 
+	/**
+	* Returns maximum phenotype value of Gene.
+	* @returns {float} phenotype maximum
+	*/
 	getMax(){
 		return this.max;
 	}
@@ -252,7 +272,7 @@ class Dna{
 	}
 
 	/**
-	* Geting single Gen phenotype value from Dna object
+	* Geting single Gen phenotype value from Dna object.
 	* @param {integer} index - gen index in Dna
 	* @returns {float | integer} selected gen value in range gen.min to gen.max interpolated by mode of gen.
 	*/
@@ -260,58 +280,129 @@ class Dna{
 		return this.genes[index].get();
 	}
 
+	/**
+	* Returns Raw (in range 0.0 to 1.0) value from Dna object.
+	* @param {integer} index - gen index in Dna
+	* @returns {float} selected gen raw value (in range 0.0 to 1.1)
+	*/
 	getRaw(index){
 		return this.genes[index].getRaw();
 	}
 
+	/**
+	* Returns copy of Gen from Dna object.
+	* @param {integer} index - gen index in Dna
+	* @returns {Gen} Gen copy
+	*/
 	getGen(index){
 		return this.genes[index].copy();
 	}
 
+	/**
+	* Returns mode number of Gen from Dna object.
+	* @param {integer} index - gen index in Dna
+	* @returns {integer} mode number
+	*/
 	getMode(index){
 		return this.genes[index].getMode();
 	}
 
+	/**
+	* Returns if wrap of Gen from Dna object is enabled.
+	* @param {integer} index - gen index in Dna
+	* @returns {boolean} wrap enabled
+	*/
 	getWrap(index){
 		return this.genes[index].getWrap();
 	}
 
+	/**
+	* Returns Range of phenotype of Gen.
+	* @param {integer} index - gen index in Dna
+	* @returns {float[]} [Bottom limit, Top limit]
+	*/
 	getRange(index){
 		return this.genes[index].getRange();
 	}
 
+	/**
+	* Returns maximum pheontype value of Gen.
+	* @param {integer} index - gen index in Dna
+	* @returns {float} Maximum phenotype value
+	*/
 	getMax(index){
 		return this.genes[index].getMax();
 	}
 
+	/**
+	* Returns minimum pheontype value of Gen.
+	* @param {integer} index - gen index in Dna
+	* @returns {float} minimum phenotype value
+	*/
 	getMin(index){
 		return this.genes[index].getMin();
 	}
 
+	/**
+	* Set phenotype value of single Gen in Dna object.
+	* @param {integer} index - gen index in Dna
+	* @param {float} value - phenotype value to set
+	*/
 	set(index, value){
 		this.genes[index].set(value);
 	}
 
+	/**
+	* Set raw value (in range 0.0 to 1.0) of single Gen in Dna object.
+	* @param {integer} index - gen index in Dna
+	* @param {float} value - raw value (in range 0.0 to 1.0) to set
+	*/
 	setRaw(index, value){
 		this.genes[index].setRaw(value);
 	}
 
+	/**
+	* Set if wrap i enabled in a single Gen of Dna object. If wrap is enabled values can overflow form minimum to maximum and oposite way.
+	* @param {integer} index - gen index in Dna
+	* @param {float} boolean - wrap enable to set
+	*/
 	setWrap(index, bool){
 		this.genes[index].setWrap(bool);
 	}
 
+	/**
+	* Set range of values for single Gen in Dna object.
+	* @param {integer} index - gen index in Dna
+	* @param {float} low - minimum phenotype limit to set
+	* @param {float} high - maximum pehotype limit to set
+	*/
 	setRange(index, low, high){
 		this.genes[index].setRange(low, high);
 	}
 
+	/**
+	* Set mode for single Gen in Dna object.
+	* @param {integer} index - gen index in Dna
+	* @param {integer} mode - mode number
+	*/
 	setMode(index, mode){
 		this.genes[index].setMode(mode);
 	}
 
+	/**
+	* Replace single gen in Dna object
+	* @param {integer} index - gen index in Dna
+	* @param {Gen} gen - Gen object to put in Dna
+	*/
 	setGen(index, gen){
 		this.genes[index] = gen;
 	}
 
+	/**
+	* Mutate (Change) values in Dna object. If wrap is enabled values can overflow from minumum to maximum and other way.
+	* @param {float} chance - precentage chance that each one gen will get mutated. 0.0 - no gen will change, 1.0 - every gen will get mutated.
+	* @param {float} rate - percaentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
+	*/
 	mutate(chance, rate){
 		for(var i = 0; i < this.genes.length; i++){
 			if (Math.random() <= chance){
@@ -321,8 +412,10 @@ class Dna{
 	}
 
 	/**
-	* Combination of two or more DNA objects.
+	* Combination of two or more Dna objects. Each gen position will be picked as whole from one of parents.
 	* @param {DNA[] | DNA} dnaArray - array of DNA objects (not including parent object)
+	* @returns {DNA} combined Dna object
+	* @todo compatibilityCheck
 	*/
 	combine(dnaArray){
 		if (!(dnaArray instanceof Array)){
@@ -342,18 +435,22 @@ class Dna{
 	}
 
 	/**
-	*
-	*
+	* Combination of two Dna objects by blending values on each gen position. Each Gen value will be partly taken from each of parents, which leads to much smoother mechanismu then just picking gen as whole from one of parents.
+	* @param {Dna} dna - Second Dna object to blend with
+	* @returns {Dna} Blended Dna object
 	*/
 	blend(dna){
 		var result = this.copy();
 		for (var i = 0; i < result.length(); i++){
 			result.genes[i] = this.genes[i].blend(dna.genes[i])
 		}
-		//console.log("1:",this,"\n2:",dna,"\n1+2:",result);
 		return result;
 	}
 
+	/**
+	* Legacy Dna.blend() method
+	* @private
+	*/
 	blendOld(dna){
 		// TODO: compatibilityCheck
 		var result = new Dna(this.length());
@@ -435,8 +532,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets lenght of generated Dna objects.
+	* @param {integer} newLength - lenght of Dna (Count of genes in Dna)
 	*/
 	setDnaLength(newLength){
 		if (newLength > 0){
@@ -463,8 +560,9 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets wrap for single Gen of generated Dna objects.
+	* @param {integer} index - gen index in Dna
+	* @param {boolean} wrap - wrap enabled
 	*/
 	setGenWrap(index,wrap){
 		if (index < this.genLength){
@@ -476,8 +574,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets wrap for all Genes of generated Dna objects.
+	* @param {boolean} wrap - wrap enabled
 	*/
 	setAllWrap(wrap){
 		for (var i = 0; i < this.genLength; i++){
@@ -486,8 +584,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets mode for all Genes of generated Dna objects.
+	* @param {boolean} mode - mode number to set
 	*/
 	setAllMode(mode){
 		for (var i = 0; i < this.genLength; i++){
@@ -496,8 +594,9 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets minimum and maximum phenotype value for all Genes of generated Dna objects.
+	* @param {float} low - minimum phenotype limit to set
+  * @param {float} high - maximum pehotype limit to set
 	*/
 	setAllRange(low,high){
 		// TODO: Low high swicth
@@ -507,8 +606,9 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets mode for single Gen of generated Dna objects.
+	* @param {integer} index - gen index in Dna
+	* @param {integer} mode - mode number to set
 	*/
 	setGenMode(index,mode){
 		if (index < this.genLength){
@@ -519,8 +619,10 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Sets minimum and maximum phenotype value for single Gene of generated Dna objects.
+	* @param {integer} index - gen index in Dna
+	* @param {float} low - minimum value of phenotype (when raw value is equal to 0.0)
+	* @param {float} high - maximum value of phenotype (when raw value is equal to 1.0)
 	*/
 	setGenRange(index,low,high){
 		if (index < this.genLength){
@@ -531,8 +633,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Generates single Dna by inner setup of this object with 0 raw value of each Gene.
+	* @returns {Dna} Dna object
 	*/
 	newDna(){
 		var result = new Dna(this.genLength);
@@ -545,8 +647,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Generates single Dna by inner setup of this object with random value of each Gene.
+	* @returns {Dna} Dna object
 	*/
 	randomDna(){
 		var result = this.newDna();
@@ -557,8 +659,10 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Generate Array of genes with random gene values.
+	* @param {integer} count - count of generated Dna objects in array.
+	* @returns {Dna[]} Array of Dna objects
+	* @todo Rename to newPool()
 	*/
 	newPopulation(count){
 		var result = []
@@ -569,8 +673,8 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* I have no idea what I wanted to do with this.
+	* @todo delete this if it is not needed
 	*/
 	combine(dnaArray){
 		if (this.lengthCheck(dnaArray)){
@@ -589,8 +693,9 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Checks if lenght of all Dna objects is the same.
+	* @param {Dna[]} dnaArray - Array of Dna object to check
+	* @return {boolean} true if the lenght is same for all Dnas, otherwise false
 	*/
 	lengthCheck(dnaArray){
 		var result = true;
@@ -604,8 +709,9 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Checks if parameters of all Dna objects is the same (Everything excluding values).
+	* @param {Dna[]} dnaArray - Array of Dna object to check
+	* @return {boolean} not done yet
 	*/
 	compatibilityCheck(dnaArray){
 		var result = true;
@@ -616,8 +722,10 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Returns array of indexes based on fitness array. Higher number makes higher chance of index to be picked.
+	* @param {float[]} fitnessArray - array of fitness values
+	* @param {integer} count - count of generated indexes (lenght of returned array)
+	* @returns {integer[]} array of indexes of atribute array
 	*/
 	getMattingPool(fitnessArray,count){
 		var result = [];
@@ -628,8 +736,10 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Generate new generation
+	* @param {Dna[]} dnaArray - Array of Dna objects to compute with
+	* @param {float[]} fitnessArray - Array of fitness values compatible with dnaArray.
+	* @returns not finished yet
 	*/
 	nextGeneration(dnaArray,fitnessArray){
 		var result = [];
@@ -645,25 +755,30 @@ class Geneo{
 	}
 
 	/**
-	*
-	*
+	* Evaluate fitness number of each gen form array. Fitness is evalueated by funtion in argument
+	* @param {Dna[]} dnaArray - array of Dna objects to evaluate from
+	* @param {function} fitnessFunction - function to work with
+	* @returns {float[]} fitness array
+	* @todo make it more easy to customize
+	* @private
 	*/
 	evaluateFitness(dnaArray, fitnessFunction){ // NOT TESTED
 		var fitness = [];
 		for (var i = 0; i < dnaArray.length; i++){
 			//console.log(dnaArray[i].get(0),dnaArray[i].get(1));
-			fitness.push(fitnessFunction(dnaArray[i].get(0),dnaArray[i].get(1)));
+			fitness.push(fitnessFunction(dnaArray[i].get(0),dnaArray[i].get(1))); // TODO: Can't be done this way
 		}
 	 	//console.log(fitness);
 		return fitness;
 	}
 
 	/**
-	*
-	*
+	* Generate a new Dna array based on existing Dna array and evaluating function. New Dna Array will have same length as one in argument. Each new Dna will be generated by law of survaival of fittest. Where parrents will be chosen by its fitness and then 'blended' together. There is no mutation included yet.
+	* @param {Dna[]} dnaArray - array of parent Dnas
+	* @param {function} fitnessFunction - function to evaluate fitness
 	*/
 	nextGeneration(dnaArray, fitnessFunction){ // Should replace nextGeneration()
-		var fitnessArray = this.evaluateFitness(dnaArray, fitnessFunction);
+		var fitnessArray = this.evaluateFitness(dnaArray, fitnessFunction); // TODO: fitness function have a great mistakes in it
 		var nextDnaArray = [];
 		var count = dnaArray.length;
 		var father = this.getMattingPool(fitnessArray, count);

@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.3.27
+* @version 0.3.29
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 */
 
@@ -164,6 +164,13 @@ class Gen{
 			var newValue = map(Math.random(),0,1,minValue,maxValue);
 		}
 		this.setRaw(newValue);
+	}
+
+	/**
+	* Randomize Gen value
+	*/
+	randomize(){
+		this.value = Math.random();
 	}
 
 	/**
@@ -399,6 +406,20 @@ class Dna{
 	}
 
 	/**
+	* Set count of Genes in Dna object
+	* @param {integer} length - count of Genes
+	*/
+	setLength(length){
+		if (length > this.genes.length){
+			for (var i = this.genes.length; i < lenght; i++){
+				this.genes.push(new Gen(0));
+			}
+		} else if (length < this.genes.length){
+			this.genes.slice(0,length);
+		}
+	}
+
+	/**
 	* Mutate (Change) values in Dna object. If wrap is enabled values can overflow from minumum to maximum and other way.
 	* @param {float} chance - precentage chance that each one gen will get mutated. 0.0 - no gen will change, 1.0 - every gen will get mutated.
 	* @param {float} rate - percaentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
@@ -408,6 +429,15 @@ class Dna{
 			if (Math.random() <= chance){
 				this.genes[i].mutate(rate);
 			}
+		}
+	}
+
+	/**
+	* Randomize Dna Values
+	*/
+	randomize(){
+		for(var i = 0; i < this.genes.length; i++){
+			this.genes[i].randomize();
 		}
 	}
 
@@ -799,6 +829,119 @@ class Geneo{
 		// Not sure about it
 	}
 }
+
+/*******************************************************************************
+*
+* @class
+*/
+class genepool{
+  construtor(){
+    this.pool = [];
+    this.template = new Dna(256);
+    this.fitness = [];
+    //this.genLength = 1;
+    //this.genWrap = [false];
+    //this.genMode = [0];
+    //this.genRange = [{min:0, max:1}];
+    //this.setDnaLength(256)
+
+  }
+
+  /**
+  *
+  *
+  */
+  setCount(){
+    this.template.
+  }
+
+  setDnaLenth(length){
+    this.template.setLength(length);
+  }
+
+  setWrapAll(bool){
+    for (var i = 0; i < this.genLength; i++){
+      this.template.setWrap(i,bool);
+    }
+  }
+
+  setWrap(index,bool){
+    this.template.setWrap(index,bool);
+  }
+
+  setMode(index,mode){
+    this.template.setMode(index,bool);
+  }
+
+  setModeAll(mode){
+    for (var i = 0; i < this.genLength; i++){
+      this.template.setMode(i,bool);
+    }
+  }
+
+  setRange(index,low,high){
+    this.template.setRenge(index,low,high);
+  }
+
+  setRangeAll(low,high){
+    for (var i = 0; i < this.genLength; i++){
+      this.template.setRenge(i,low,high);
+    }
+  }
+  /**
+  * Updated genepool by template.
+  * @param {Dna[]} pool - (Optional) Array of Dna objects
+  * @return {Dna[]} (Optional) if
+  * @todo This isn't seams to be right idea
+  */
+  updatePoll(pool){
+    if (pool == undefined):
+      this.pool = updatePool(this.pool);
+    else{
+
+    }
+  }
+
+
+  /**
+  * Return Dna from genepool
+  */
+  get(index){
+    if (index <= this.pool.length){
+      return this.pool[index];
+    }
+    else {
+      throw new Error("Genepool.get() argument out of range.");
+    }
+  }
+
+  /**
+  *
+  */
+  evolve(){
+
+  }
+
+  /**
+  * Generates random dna by template setting inside genepool object.
+  */
+  randomDna(){
+    result = this.template.copy()
+    result.mutate(1,1);
+    return result;
+  }
+
+  /**
+  * Randomize all Dnas in genepool.
+  */
+  randomize(){
+    for (var i = 0; i < this.pool.length; i++){
+      this.pool[i].randomize();
+    }
+  }
+}
+
+
 
 /****************************************************************/
 

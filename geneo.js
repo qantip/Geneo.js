@@ -848,7 +848,7 @@ class genepool{
   }
 
   /**
-  *
+  * Nothing
   *
   */
   setCount(){

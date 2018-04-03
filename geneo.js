@@ -7,8 +7,8 @@
 */
 
 /**
-* Class for elementry data handling. Simulation of signle gen behaviour.
 * @class
+* @classdesc Class for elementry data handling. Simulation of signle gen behaviour.
 */
 class Gen{
 	/**
@@ -262,8 +262,8 @@ class Gen{
 
 
 /*******************************************************************************
-* Class for handling DNA informations. Each Dna object contains multiple Gen objects.
 * @class
+* @classdesc Class for handling DNA informations. Each Dna object contains multiple Gen objects.
 */
 class Dna{
 	/**
@@ -587,8 +587,8 @@ class Dna{
 }
 
 /******************************************************************************
-* Class for advanced working with DNA populations.
 * @class
+* @classdesc Class for advanced working with DNA populations.
 */
 class Geneo{
 	/**
@@ -875,8 +875,8 @@ class Geneo{
 }
 
 /*******************************************************************************
-*
 * @class
+* @classdesc Genepool simply.
 */
 class Genepool{
 	/**
@@ -895,13 +895,8 @@ class Genepool{
   }
 
   /**
-<<<<<<< HEAD
-  * Nothing
-  *
-=======
   * Seting new count of Dna objects in genepool.
   * @param {integer} newCount - new count of Dna objects in genepool
->>>>>>> 9f17904aa7efa2b1f033e5cc89106387b87d0fa6
   */
   setCount(newCount){
     oldCount = this.pool.length;
@@ -961,10 +956,10 @@ class Genepool{
 
 	/**
 	* Returns template Dna object.
-	* @returns template Dna object
+	* @returns {Dna} template Dna object
 	*/
 	getTemplate(){
-		retrun this.template;
+		return this.template;
 	}
 
   /**
@@ -1108,3 +1103,5 @@ function weightedRandom(weightArray){
 		}
 	}
 }
+
+export {Gen, Dna, Geneo, Genepool, map, constrain, weightedRandom};

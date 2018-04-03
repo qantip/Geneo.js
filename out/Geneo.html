@@ -93,7 +93,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line427">line 427</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line598">line 598</a>
     </li></ul></dd>
     
 
@@ -154,6 +154,10 @@
 
 
 
+<div class="description">
+    I have no idea what I wanted to do with this.
+</div>
+
 
 
 
@@ -195,7 +199,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line575">line 575</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line753">line 753</a>
     </li></ul></dd>
     
 
@@ -203,6 +207,13 @@
 
     
 
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>delete this if it is not needed</li>
+        </ul>
+    </dd>
     
 </dl>
 
@@ -229,19 +240,72 @@
     
 
     
-    <h4 class="name" id="compatibilityCheck"><span class="type-signature"></span>compatibilityCheck<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="compatibilityCheck"><span class="type-signature"></span>compatibilityCheck<span class="signature">(dnaArray)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
     
 
     
 
 
 
+<div class="description">
+    Checks if parameters of all Dna objects is the same (Everything excluding values).
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dnaArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Dna.html">Dna</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Array of Dna object to check</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -277,7 +341,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line610">line 610</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line790">line 790</a>
     </li></ul></dd>
     
 
@@ -300,6 +364,28 @@
 
 
 
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    not done yet
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
 
 
 
@@ -363,7 +449,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line682">line 682</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line871">line 871</a>
     </li></ul></dd>
     
 
@@ -419,12 +505,353 @@
     
 
     
-    <h4 class="name" id="evaluateFitness"><span class="type-signature"></span>evaluateFitness<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="getMattingPool"><span class="type-signature"></span>getMattingPool<span class="signature">(fitnessArray, count)</span><span class="type-signature"> &rarr; {Array.&lt;integer>}</span></h4>
     
 
     
 
 
+
+<div class="description">
+    Returns array of indexes based on fitness array. Higher number makes higher chance of index to be picked.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>fitnessArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;float></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">array of fitness values</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>count</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">count of generated indexes (lenght of returned array)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line804">line 804</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    array of indexes of atribute array
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;integer></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="lengthCheck"><span class="type-signature"></span>lengthCheck<span class="signature">(dnaArray)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Checks if lenght of all Dna objects is the same.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dnaArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Dna.html">Dna</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Array of Dna object to check</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line774">line 774</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    true if the lenght is same for all Dnas, otherwise false
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="newDna"><span class="type-signature"></span>newDna<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Dna.html">Dna</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generates single Dna by inner setup of this object with 0 raw value of each Gene.
+</div>
 
 
 
@@ -467,7 +894,519 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line651">line 651</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line713">line 713</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Dna object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Dna.html">Dna</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="newPopulation"><span class="type-signature"></span>newPopulation<span class="signature">(count)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="Dna.html">Dna</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate Array of genes with random gene values.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>count</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">count of generated Dna objects in array.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line741">line 741</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+    <dt class="tag-todo">To Do:</dt>
+    <dd class="tag-todo">
+        <ul>
+            <li>Rename to newPool()</li>
+        </ul>
+    </dd>
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Array of Dna objects
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="Dna.html">Dna</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="nextGeneration"><span class="type-signature"></span>nextGeneration<span class="signature">(dnaArray, fitnessArray)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate new generation
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dnaArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Dna.html">Dna</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Array of Dna objects to compute with</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fitnessArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;float></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Array of fitness values compatible with dnaArray.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line818">line 818</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    not finished yet
+</div>
+
+
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="nextGeneration"><span class="type-signature"></span>nextGeneration<span class="signature">(dnaArray, fitnessFunction)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Generate a new Dna array based on existing Dna array and evaluating function. New Dna Array will have same length as one in argument. Each new Dna will be generated by law of survaival of fittest. Where parrents will be chosen by its fitness and then 'blended' together. There is no mutation included yet.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dnaArray</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;<a href="Dna.html">Dna</a>></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">array of parent Dnas</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fitnessFunction</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">function to evaluate fitness</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line854">line 854</a>
     </li></ul></dd>
     
 
@@ -501,12 +1440,16 @@
     
 
     
-    <h4 class="name" id="getMattingPool"><span class="type-signature"></span>getMattingPool<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="randomDna"><span class="type-signature"></span>randomDna<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Dna.html">Dna</a>}</span></h4>
     
 
     
 
 
+
+<div class="description">
+    Generates single Dna by inner setup of this object with random value of each Gene.
+</div>
 
 
 
@@ -549,7 +1492,164 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line622">line 622</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line727">line 727</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Dna object
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Dna.html">Dna</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="setAllMode"><span class="type-signature"></span>setAllMode<span class="signature">(mode)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Sets mode for all Genes of generated Dna objects.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">mode number to set</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line664">line 664</a>
     </li></ul></dd>
     
 
@@ -583,19 +1683,95 @@
     
 
     
-    <h4 class="name" id="lengthCheck"><span class="type-signature"></span>lengthCheck<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setAllRange"><span class="type-signature"></span>setAllRange<span class="signature">(low, high)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets minimum and maximum phenotype value for all Genes of generated Dna objects.
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>low</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum phenotype limit to set</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>high</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum pehotype limit to set</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -631,7 +1807,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line595">line 595</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line675">line 675</a>
     </li></ul></dd>
     
 
@@ -665,19 +1841,72 @@
     
 
     
-    <h4 class="name" id="newDna"><span class="type-signature"></span>newDna<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setAllWrap"><span class="type-signature"></span>setAllWrap<span class="signature">(wrap)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets wrap for all Genes of generated Dna objects.
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">wrap enabled</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -713,7 +1942,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line537">line 537</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line654">line 654</a>
     </li></ul></dd>
     
 
@@ -747,19 +1976,72 @@
     
 
     
-    <h4 class="name" id="newPopulation"><span class="type-signature"></span>newPopulation<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setDnaLength"><span class="type-signature"></span>setDnaLength<span class="signature">(newLength)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets lenght of generated Dna objects.
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>newLength</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">lenght of Dna (Count of genes in Dna)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -795,7 +2077,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line563">line 563</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line612">line 612</a>
     </li></ul></dd>
     
 
@@ -829,19 +2111,95 @@
     
 
     
-    <h4 class="name" id="nextGeneration"><span class="type-signature"></span>nextGeneration<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setGenMode"><span class="type-signature"></span>setGenMode<span class="signature">(index, mode)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets mode for single Gen of generated Dna objects.
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">gen index in Dna</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">mode number to set</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -877,7 +2235,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line665">line 665</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line687">line 687</a>
     </li></ul></dd>
     
 
@@ -911,19 +2269,118 @@
     
 
     
-    <h4 class="name" id="nextGeneration"><span class="type-signature"></span>nextGeneration<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setGenRange"><span class="type-signature"></span>setGenRange<span class="signature">(index, low, high)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets minimum and maximum phenotype value for single Gene of generated Dna objects.
+</div>
 
 
 
 
 
 
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">gen index in Dna</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>low</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">minimum value of phenotype (when raw value is equal to 0.0)</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>high</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">float</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">maximum value of phenotype (when raw value is equal to 1.0)</td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -959,7 +2416,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line634">line 634</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line701">line 701</a>
     </li></ul></dd>
     
 
@@ -993,13 +2450,16 @@
     
 
     
-    <h4 class="name" id="randomDna"><span class="type-signature"></span>randomDna<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="setGenWrap"><span class="type-signature"></span>setGenWrap<span class="signature">(index, wrap)</span><span class="type-signature"></span></h4>
     
 
     
 
 
 
+<div class="description">
+    Sets wrap for single Gen of generated Dna objects.
+</div>
 
 
 
@@ -1009,167 +2469,76 @@
 
 
 
-
-
-
-<dl class="details">
-
+    <h5>Parameters:</h5>
     
 
-    
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
 
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line551">line 551</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <th>Type</th>
 
         
-            
-
-    
-
-    
-    <h4 class="name" id="setAllMode"><span class="type-signature"></span>setAllMode<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line492">line 492</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
             
 
-    
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">gen index in Dna</td>
+        </tr>
 
     
-    <h4 class="name" id="setAllRange"><span class="type-signature"></span>setAllRange<span class="signature">()</span><span class="type-signature"></span></h4>
-    
+
+        <tr>
+            
+                <td class="name"><code>wrap</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">wrap enabled</td>
+        </tr>
 
     
-
-
-
-
-
-
-
-
-
+    </tbody>
+</table>
 
 
 
@@ -1205,417 +2574,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line502">line 502</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setAllWrap"><span class="type-signature"></span>setAllWrap<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line482">line 482</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setDnaLength"><span class="type-signature"></span>setDnaLength<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line441">line 441</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setGenMode"><span class="type-signature"></span>setGenMode<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line513">line 513</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setGenRange"><span class="type-signature"></span>setGenRange<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line525">line 525</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        
-            
-
-    
-
-    
-    <h4 class="name" id="setGenWrap"><span class="type-signature"></span>setGenWrap<span class="signature">()</span><span class="type-signature"></span></h4>
-    
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line469">line 469</a>
+        <a href="geneo.js.html">geneo.js</a>, <a href="geneo.js.html#line641">line 641</a>
     </li></ul></dd>
     
 
@@ -1659,13 +2618,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dna.html">Dna</a></li><li><a href="Gen.html">Gen</a></li><li><a href="Geneo.html">Geneo</a></li></ul><h3>Global</h3><ul><li><a href="global.html#constrain">constrain</a></li><li><a href="global.html#map">map</a></li><li><a href="global.html#weightedRandom">weightedRandom</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Dna.html">Dna</a></li><li><a href="Gen.html">Gen</a></li><li><a href="Geneo.html">Geneo</a></li><li><a href="Genepool.html">Genepool</a></li></ul><h3>Global</h3><ul><li><a href="global.html#constrain">constrain</a></li><li><a href="global.html#map">map</a></li><li><a href="global.html#weightedRandom">weightedRandom</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Mar 23 2018 18:04:34 GMT+0100 (Střední Evropa (běžný čas))
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Tue Apr 03 2018 19:42:33 GMT+0200 (Střední Evropa (letní čas))
 </footer>
 
 <script> prettyPrint(); </script>

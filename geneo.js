@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.3.29
+* @version 0.4.03
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 */
 
@@ -288,12 +288,36 @@ class Dna{
 	}
 
 	/**
+	*	Return all phenotype values in array
+	* @returns {float[]} phenotype values in array
+	*/
+	getAll(){
+		var result = [];
+		for (var i = 0; i < this.length(); i++){
+			result.push(this.get(i));
+		}
+		return result;
+	}
+
+	/**
 	* Returns Raw (in range 0.0 to 1.0) value from Dna object.
 	* @param {integer} index - gen index in Dna
 	* @returns {float} selected gen raw value (in range 0.0 to 1.1)
 	*/
 	getRaw(index){
 		return this.genes[index].getRaw();
+	}
+
+	/**
+	*	Return all raw values in array
+	* @returns {float[]} raw values (in range 0.0 to 1.0) in array
+	*/
+	getRawAll(){
+		var result = [];
+		for (var i = 0; i < this.length(); i++){
+			result.push(this.getRaw(i));
+		}
+		return result;
 	}
 
 	/**
@@ -360,12 +384,32 @@ class Dna{
 	}
 
 	/**
+	*	Set all phenotype values in array
+	* @param {float[]} valueArray - phenotype values in array
+	*/
+	setAll(valuesArray){
+		for (var i = 0; i < this.length(); i++){
+			this.set(i,valuesArray[i]);
+		}
+	}
+
+	/**
 	* Set raw value (in range 0.0 to 1.0) of single Gen in Dna object.
 	* @param {integer} index - gen index in Dna
 	* @param {float} value - raw value (in range 0.0 to 1.0) to set
 	*/
 	setRaw(index, value){
 		this.genes[index].setRaw(value);
+	}
+
+	/**
+	*	Set all raw values in array
+	* @param {float[]} valueArray - raw values (in range 0.0 to 1.0) in array
+	*/
+	setRawAll(valuesArray){
+		for (var i = 0; i < this.length(); i++){
+			this.setRaw(i,valuesArray[i]);
+		}
 	}
 
 	/**
@@ -433,7 +477,7 @@ class Dna{
 	}
 
 	/**
-	* Randomize Dna Values
+	* Randomize Dna values
 	*/
 	randomize(){
 		for(var i = 0; i < this.genes.length; i++){
@@ -834,8 +878,12 @@ class Geneo{
 *
 * @class
 */
-class genepool{
-  construtor(){
+class Genepool{
+	/**
+	* Genepool constructor
+	* @constructor
+	*/
+  constructor(){
     this.pool = [];
     this.template = new Dna(256);
     this.fitness = [];
@@ -844,15 +892,27 @@ class genepool{
     //this.genMode = [0];
     //this.genRange = [{min:0, max:1}];
     //this.setDnaLength(256)
-
   }
 
   /**
+<<<<<<< HEAD
   * Nothing
   *
+=======
+  * Seting new count of Dna objects in genepool.
+  * @param {integer} newCount - new count of Dna objects in genepool
+>>>>>>> 9f17904aa7efa2b1f033e5cc89106387b87d0fa6
   */
-  setCount(){
-    this.template.
+  setCount(newCount){
+    oldCount = this.pool.length;
+    if (newCount > oldCount){
+      for (var i = oldCount; i < newCount; i++){
+        this.pool.push(this.template.copy())
+      }
+    } else {
+      this.pool.slice(0,newCount);
+
+    }
   }
 
   setDnaLenth(length){
@@ -888,23 +948,69 @@ class genepool{
       this.template.setRenge(i,low,high);
     }
   }
+
+	/**
+	* Set new template of generated Dna objects.
+	* @param {Dna} dna - Dna to set as template
+	*/
+  setTemplate(dna){
+    // TODO: test dna type
+    this.template = dna;
+    // NOTE: It's questionable if that shoult be copy or not.
+  }
+
+	/**
+	* Returns template Dna object.
+	* @returns template Dna object
+	*/
+	getTemplate(){
+		retrun this.template;
+	}
+
   /**
   * Updated genepool by template.
-  * @param {Dna[]} pool - (Optional) Array of Dna objects
-  * @return {Dna[]} (Optional) if
-  * @todo This isn't seams to be right idea
+  * @param {Dna[]} PhenotypeBool - (Optional) if true it will try to keep phenotype value of genes.
+  * @return {Dna[]} New genepool
   */
-  updatePoll(pool){
-    if (pool == undefined):
-      this.pool = updatePool(this.pool);
-    else{
-
+  updatePoll(phenotypeMode){
+    if (typeof phenotypeMode === undefined){
+      phenotypeMode = false; // default value
+    }
+    for (var i = 0; i < this.pool.length; i++){
+      if (phenotypeMode == true){
+        var values = this.pool[i].getAll(); // Error: not on Gen level (it will need something like getAll)
+        this.pool[i] = this.template.copy();
+        this.pool[i].setAll(values);
+      } else {
+        var values = this.pool[i].getRawAll(); // Error as above (it will need something like getRawAll)
+        this.pool[i] = this.template.copy();
+        this.pool[i].setRawAll(values);
+      }
     }
   }
 
+  /**
+  * Create new (random) set ot of Dna objects. They will keep the parameters of template dna, just values will be random.
+  * @param {integer} count - number of Dna objects in pool
+	* @param {boolean} randomly - (OPTIONAL) if true the gen values will be random, otherwise same as template
+  */
+  createPool(count,randomly){
+    if (typeof randomly === undefined){
+      randomly = false;  // default value
+    }
+    this.pool = [];
+    for(var i = 0; i < count; i++){
+      this.pool.push(this.template.copy())
+      if (randomly == true){
+				this.pool[i].randomize();
+			}
+    }
+  }
 
   /**
   * Return Dna from genepool
+	* @param {integer} index - Index of Dna object to get
+	* @returns {Dna} - Dna object
   */
   get(index){
     if (index <= this.pool.length){
@@ -915,11 +1021,24 @@ class genepool{
     }
   }
 
+	/**
+	* Evaluete fittnes for genepool
+	* @param {function} fitnessFunction - function
+	*/
+  evaluateFitness(fitnessFunction){
+    this.fitness = [];
+    for (var i = 0; i < this.pool.length; i++){
+      this.fitness.push(fitnessFunction(this.pool[i]));
+    }
+  }
+
   /**
   *
   */
-  evolve(){
-
+  mutatePool(chance,rate){
+    for (var i = 0; i < this.pool.length; i++){
+      this.pool[i].mutate(chance,rate);
+    }
   }
 
   /**
@@ -927,7 +1046,7 @@ class genepool{
   */
   randomDna(){
     result = this.template.copy()
-    result.mutate(1,1);
+    result.randomize();
     return result;
   }
 
@@ -940,8 +1059,6 @@ class genepool{
     }
   }
 }
-
-
 
 /****************************************************************/
 

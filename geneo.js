@@ -236,13 +236,17 @@ class Gen{
 		if (!(genArray instanceof Array)){
 			genArray = [genArray]
 		}
-		for (var i = 0; i < genArray.length; i++){
-			if (!(genArray[i].mode === this.mode)){ return false; }
-			if (!(genArray[i].wrap === this.wrap)){ return false; }
-			if (!(genArray[i].min === this.min)){ return false; }
-			if (!(genArray[i].max === this.max)){ return false; }
+		try {
+			for (var i = 0; i < genArray.length; i++){
+				if (!(genArray[i].mode === this.mode)){ return false; }
+				if (!(genArray[i].wrap === this.wrap)){ return false; }
+				if (!(genArray[i].min === this.min)){ return false; }
+				if (!(genArray[i].max === this.max)){ return false; }
+			}
+			return true;
+		} except {
+			return false
 		}
-		return true;
 	}
 
 	/**
@@ -466,7 +470,7 @@ class Dna{
 	/**
 	* Mutate (Change) values in Dna object. If wrap is enabled values can overflow from minumum to maximum and other way.
 	* @param {float} chance - precentage chance that each one gen will get mutated. 0.0 - no gen will change, 1.0 - every gen will get mutated.
-	* @param {float} rate - percaentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
+	* @param {float} rate - percentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
 	*/
 	mutate(chance, rate){
 		for(var i = 0; i < this.genes.length; i++){
@@ -584,6 +588,13 @@ class Dna{
 		}
 		return result;
 	}
+}
+
+compatibleWith(dnaArray){
+	if (!(dnaArray instanceof Array)){
+		dnaArray = [dnaArray]
+	}
+	for (var i = 0; i < this.length())
 }
 
 /******************************************************************************
@@ -1002,6 +1013,31 @@ class Genepool{
     }
   }
 
+	/**
+	* Add Dna to genepool
+	* @param {Dna} dna - Dna to add
+	*/
+	push(dna){
+		this.pool.push(dna)
+	}
+
+	/**
+	* remove dna to genepool
+	* @param {integer} index - Index of
+	*/
+	slice(index){
+		this.pool.slice(index);
+	}
+
+	/**
+	* Replace Dna in pool
+	* @param {integer} index - index of element to replace
+	* @param {Dna} dna - Dna object for replacement
+	*/
+	replace(index,dna){
+		this.pool[index] = dna;
+	}
+
   /**
   * Return Dna from genepool
 	* @param {integer} index - Index of Dna object to get
@@ -1016,6 +1052,10 @@ class Genepool{
     }
   }
 
+	getValue(dnaIndex,genIndex){
+		return this.pool[dnaIndex].get(genIndex);
+	}
+
 	/**
 	* Evaluete fittnes for genepool
 	* @param {function} fitnessFunction - function
@@ -1028,8 +1068,10 @@ class Genepool{
   }
 
   /**
-  *
-  */
+  * Mutate everything in genepool.
+	* @param {float} chance - precentage chance that each one gen will get mutated. 0.0 - no gen will change, 1.0 - every gen will get mutated.
+	* @param {float} rate - percentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
+	*/
   mutatePool(chance,rate){
     for (var i = 0; i < this.pool.length; i++){
       this.pool[i].mutate(chance,rate);
@@ -1046,7 +1088,7 @@ class Genepool{
   }
 
   /**
-  * Randomize all Dnas in genepool.
+  * Randomize all Dna objects in genepool.
   */
   randomize(){
     for (var i = 0; i < this.pool.length; i++){

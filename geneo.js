@@ -1088,9 +1088,23 @@ class Genepool{
 
 	getMattingPool(count){
 		var result = [];
-		for (var i = 0; i < count; i++){
-			result.push(weightedRandom(this.fitness)) //BUG: no more this.fitness but this.pool[i].fitness
+		var fitnessSum = 0.0;
+		for (var i = 0; i < this.count(); i++){
+			fitnessSum += this.pool[i].fitness;
 		}
+		for (var j = 0; j < count; j++){
+			var pick = Math.random() * fitnessSum;
+			var found = false;
+			for (var i = 0; (i < this.count())&&(!found); i++){
+				pick -= this.pool[i].fitness;
+				if (pick <= 0){
+					result.push(i);
+					//console.log("breaking:",result,count);
+					found = true;
+				}
+			}
+		}
+		//console.log("returning");
 		return result;
 	}
 
@@ -1101,6 +1115,7 @@ class Genepool{
 		var nextPool = [];
 		var fatherPool = this.getMattingPool(count);
 		var motherPool = this.getMattingPool(count);
+		//console.log(fatherPool);
 		for (var i = 0; i < count; i++){
 			nextPool.push(this.get(motherPool[i]).blend(this.get(fatherPool[i])));
 		}

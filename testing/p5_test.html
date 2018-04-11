@@ -28,17 +28,17 @@
       pool.slice(10);
       pool.concat(offsprings);
       pool.evaluateFitness(fitko);
-      frameRate(1);
+      //frameRate(10);
     }
     function draw(){
-      background("#00FF00");
+      background("#003300");
       //fill("#00FFFF");
       noStroke();
       //pool.mutatePool(0.5,0.001);
       var offsprings = pool.crossover(10);
       pool.slice(10);
       pool.concat(offsprings);
-      pool.mutate(0.1,0.02);
+      pool.mutate(0.01,0.02);
       pool.evaluateFitness(fitko);
       for(var i = 0; i < pool.count() ;i++){
         fill(map(pool.fitness[i],0,1000,0,255));

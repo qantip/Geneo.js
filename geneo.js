@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.4.03
+* @version 0.4.11
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 */
 
@@ -244,8 +244,9 @@ class Gen{
 				if (!(genArray[i].max === this.max)){ return false; }
 			}
 			return true;
-		} except {
-			return false
+		}
+		catch(error) {
+		 return false;
 		}
 	}
 
@@ -588,13 +589,15 @@ class Dna{
 		}
 		return result;
 	}
-}
 
-compatibleWith(dnaArray){
-	if (!(dnaArray instanceof Array)){
-		dnaArray = [dnaArray]
+	compatibleWith(dnaArray){
+		if (!(dnaArray instanceof Array)){
+			dnaArray = [dnaArray]
+		}
+		for (var i = 0; i < this.length(); i++){
+			//TODO: Unfinished
+		}
 	}
-	for (var i = 0; i < this.length())
 }
 
 /******************************************************************************
@@ -921,6 +924,10 @@ class Genepool{
     }
   }
 
+	count(){
+		return this.pool.length;
+	}
+
   setDnaLenth(length){
     this.template.setLength(length);
   }
@@ -1061,22 +1068,75 @@ class Genepool{
 	* @param {function} fitnessFunction - function
 	*/
   evaluateFitness(fitnessFunction){
-    this.fitness = [];
-    for (var i = 0; i < this.pool.length; i++){
-      this.fitness.push(fitnessFunction(this.pool[i]));
-    }
-  }
+		for (var i = 0; i < this.pool.length; i++){
+			this.pool[i].fitness = fitnessFunction(this.pool[i]);
+		}
+	}
 
+	getFitnessRange(){
+		var max = this.pool[0].fitness;
+		var min = this.pool[0].fitness;
+		for (var i = 1; i < this.pool.length; i++){
+			if (this.pool[i].fitness > max){
+				max = this.pool[i].fitness;
+			} else if (this.pool[i].fitness < min){
+				min = this.pool[i].fitness;
+			}
+		}
+		return [min, max];
+	}
+
+	getMattingPool(count){
+		var result = [];
+		for (var i = 0; i < count; i++){
+			result.push(weightedRandom(this.fitness)) //BUG: no more this.fitness but this.pool[i].fitness
+		}
+		return result;
+	}
+
+	crossover(count){
+		if (count == undefined){
+			count = this.count();
+		}
+		var nextPool = [];
+		var fatherPool = this.getMattingPool(count);
+		var motherPool = this.getMattingPool(count);
+		for (var i = 0; i < count; i++){
+			nextPool.push(this.get(motherPool[i]).blend(this.get(fatherPool[i])));
+		}
+		return nextPool;
+	}
   /**
   * Mutate everything in genepool.
 	* @param {float} chance - precentage chance that each one gen will get mutated. 0.0 - no gen will change, 1.0 - every gen will get mutated.
 	* @param {float} rate - percentage of maximum change of gen values, that will change. 0.0 - no change, 0.1 - value will change by max 10%, 1.0 - gen value will randomly mutate to whole range
 	*/
-  mutatePool(chance,rate){
+  mutate(chance,rate){
     for (var i = 0; i < this.pool.length; i++){
       this.pool[i].mutate(chance,rate);
     }
   }
+
+	slice(begin,end){
+		if (end === undefined){
+			this.pool.slice(begin);
+		} else {
+			this.pool.slice(begin,end);
+		}
+	}
+
+	concat(dnaArray){
+		if (!(dnaArray instanceof Array)){
+			dnaArray = [dnaArray];
+		}
+		this.pool.concat(dnaArray);
+	}
+	/**
+	*	Sort genepool by its fitness (from highest to lowest). Throws error while no fitness is defined.
+	*/
+	sort(){
+		this.pool.sort(function(a,b){return b.fitness - a.fitness});
+	}
 
   /**
   * Generates random dna by template setting inside genepool object.
@@ -1146,4 +1206,4 @@ function weightedRandom(weightArray){
 	}
 }
 
-export {Gen, Dna, Geneo, Genepool, map, constrain, weightedRandom};
+//export {Gen, Dna, Geneo, Genepool, map, constrain, weightedRandom};

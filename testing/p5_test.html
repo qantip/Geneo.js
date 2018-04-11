@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title>P5 Testing</title>
+  <script src="../p5.min.js"></script>
+  <script src="../geneo.js"></script>
+</head>
+<body>
+  <script>
+    function fitko(dna){
+      x = 0;
+      y = 0;
+      a = dna.get(0);
+      b = dna.get(1);
+      //dist = ((x - a)**2 + (y - b)**2)**0.5;
+      dist = a + b;
+      return dist;
+    }
+    function setup(){
+      createCanvas(800,600);
+      pool = new Genepool();
+      dna = new Dna(2);
+      dna.setRange(0,0,width);
+      dna.setRange(1,0,height);
+      pool.setTemplate(dna);
+      pool.createPool(50,true);
+      pool.evaluateFitness(fitko);
+      var offsprings = pool.crossover(10);
+      pool.slice(10);
+      pool.concat(offsprings);
+      pool.evaluateFitness(fitko);
+      frameRate(1);
+    }
+    function draw(){
+      background("#00FF00");
+      //fill("#00FFFF");
+      noStroke();
+      //pool.mutatePool(0.5,0.001);
+      var offsprings = pool.crossover(10);
+      pool.slice(10);
+      pool.concat(offsprings);
+      pool.mutate(0.1,0.02);
+      pool.evaluateFitness(fitko);
+      for(var i = 0; i < pool.count() ;i++){
+        fill(map(pool.fitness[i],0,1000,0,255));
+        ellipse(pool.getValue(i,0),pool.getValue(i,1),5,5);
+      }
+    }
+  </script>
+</body>
+</html>

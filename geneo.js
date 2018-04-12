@@ -2,8 +2,9 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.4.11
+* @version 0.4.12
 * @see {@link https://github.com/qantip/Geneo.js | Github }
+* @todo levy flight mutation
 */
 
 /**
@@ -40,6 +41,8 @@ class Gen{
 				return Math.round(
 					map(this.value,0,1,this.min,this.max)
 					);
+			case 2: // return boolean
+				return (this.value < 0.5) ? true : false;
 		}
 	}
 
@@ -192,7 +195,7 @@ class Gen{
 	*	@param {Gen} gen - gen to blend with
 	* @returns {Gen} Blended gen
 	*/
-	blend(gen){
+	blend(gen){ //TODO: Insert wrap mode;
 		var result = this.copy();
 		var ratio = Math.random();
 		result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
@@ -900,7 +903,7 @@ class Genepool{
   constructor(){
     this.pool = [];
     this.template = new Dna(256);
-    this.fitness = [];
+    //this.fitness = [];
     //this.genLength = 1;
     //this.genWrap = [false];
     //this.genMode = [0];
@@ -1134,9 +1137,9 @@ class Genepool{
 
 	slice(begin,end){
 		if (end === undefined){
-			this.pool.slice(begin);
+			this.pool = this.pool.slice(begin);
 		} else {
-			this.pool.slice(begin,end);
+			this.pool = this.pool.slice(begin,end);
 		}
 	}
 
@@ -1144,22 +1147,36 @@ class Genepool{
 		if (!(dnaArray instanceof Array)){
 			dnaArray = [dnaArray];
 		}
-		this.pool.concat(dnaArray);
+		this.pool = this.pool.concat(dnaArray);
 	}
 	/**
 	*	Sort genepool by its fitness (from highest to lowest). Throws error while no fitness is defined.
 	*/
-	sort(){
-		this.pool.sort(function(a,b){return b.fitness - a.fitness});
+	sort(reverse){
+		if ((reverse === undefined) || (!reverse)){
+			this.pool.sort(function(a,b){return b.fitness - a.fitness});
+		} else {
+			this.pool.sort(function(a,b){return a.fitness - b.fitness});
+		}
 	}
 
   /**
   * Generates random dna by template setting inside genepool object.
   */
-  randomDna(){
-    result = this.template.copy()
-    result.randomize();
-    return result;
+  randomDna(count){
+		if (count === undefined){
+			var count = 1;
+		}
+		var result = [];
+		for (var i = 0; i < count; i++){
+    	result.push(this.template.copy());
+    	result[i].randomize();
+		}
+		if (count == 1){
+			return result[0];
+		} else {
+    	return result;
+		}
   }
 
   /**

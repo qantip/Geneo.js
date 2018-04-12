@@ -1,50 +1,83 @@
+<!--
+version: 0.04.12
+-->
 <html>
 <head>
-  <title>P5 Testing</title>
+  <title>Geneo | Mouse Position Finder</title>
   <script src="../p5.min.js"></script>
   <script src="../geneo.js"></script>
 </head>
 <body>
   <script>
-    function fitko(dna){
-      x = 0;
-      y = 0;
+    //var NOISE_SCALE = 0.1;
+    var PARTICLE_COUNT = 150;     // Count of particles to work with
+    var MUTATION_RATE = 0.02;     // Maximum percentage of change when mutate
+    var MUTATION_CHANCE = 0.05;   // Percentage chance that gen will mutate
+    var REPEL_MODE = true;        // Two modes switch, true: farrer from mouse is better, false: closer to mouse in better
+    var CROSSOVER_COUNT = 40;     // Count of offsprings generated each round (population is stable)
+    var RANDOM_COUNT = 5;         // Count of new random particles generated each round
+    var FRAME_RATE = 10;          // Max FPS
+    var DISPLAY_RATE = 0.75;      // Percentage of fittest population which is displayed
+    var pool;
+    var dna;
+
+    function fitToMouse(dna){
+      x = mouseX;
+      y = mouseY;
       a = dna.get(0);
       b = dna.get(1);
-      //dist = ((x - a)**2 + (y - b)**2)**0.5;
-      dist = a + b;
-      return dist;
+      dist = ((x - a)**2 + (y - b)**2)**0.5;
+      //dist = a + b;
+      return dist**0.2;
     }
+    
+    /*function displayNoise(w,h){
+      for(var x = 0; x < width; x++){
+        for(var y = 0; y < height; y++){
+          var v = noise(x*NOISE_SCALE,y*NOISE_SCALE)*256;
+          set(x,y,v);
+        }
+      }
+    }*/
+
     function setup(){
+
       createCanvas(800,600);
+      colorMode(HSB,256,100,100);
+      noStroke();
+
       pool = new Genepool();
       dna = new Dna(2);
       dna.setRange(0,0,width);
       dna.setRange(1,0,height);
       pool.setTemplate(dna);
-      pool.createPool(50,true);
-      pool.evaluateFitness(fitko);
-      var offsprings = pool.crossover(10);
-      pool.slice(10);
-      pool.concat(offsprings);
-      pool.evaluateFitness(fitko);
-      //frameRate(10);
+      pool.createPool(PARTICLE_COUNT,true);
+      pool.evaluateFitness(fitToMouse);
+      frameRate(FRAME_RATE);
     }
+
     function draw(){
-      background("#003300");
-      //fill("#00FFFF");
-      noStroke();
-      //pool.mutatePool(0.5,0.001);
-      var offsprings = pool.crossover(10);
-      pool.slice(10);
+
+      pool.mutate(MUTATION_CHANCE,MUTATION_RATE);
+      var offsprings = pool.crossover(CROSSOVER_COUNT);
+      var newcomers = pool.randomDna(RANDOM_COUNT);
+      pool.sort(REPEL_MODE); // Change this to false to concentrate around mouse
+      pool.slice(CROSSOVER_COUNT+RANDOM_COUNT);
       pool.concat(offsprings);
-      pool.mutate(0.01,0.02);
-      pool.evaluateFitness(fitko);
-      for(var i = 0; i < pool.count() ;i++){
-        fill(map(pool.fitness[i],0,1000,0,255));
+      pool.concat(newcomers);
+      pool.evaluateFitness(fitToMouse);
+      var fitnessRange = pool.getFitnessRange();
+
+      // DISPLAY
+      background(0,0,95);
+      for(var i = 0; i < pool.count()*DISPLAY_RATE ;i++){ // Display top 50% of population
+        var ratio = map(pool.get(i).fitness,fitnessRange[0],fitnessRange[1],0,1);
+        fill(0,100*(ratio),70*(ratio));
+        //console.log(pool.get(i).fitness);
         ellipse(pool.getValue(i,0),pool.getValue(i,1),5,5);
       }
     }
   </script>
+  <p>Red - lowest fittnes; Black - highest fittnes</p>
 </body>
 </html>

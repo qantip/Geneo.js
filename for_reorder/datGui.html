@@ -1,0 +1,130 @@
+<!--
+version: 0.04.12
+-->
+<html>
+<head>
+  <title>Geneo | Mouse Position Finder</title>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.1/dat.gui.min.js"></script>
+  <script type="text/javascript" src="../geneo.js"></script>
+</head>
+<body>
+  <script>
+    var NOISE_SCALE = 0.007;       // Scale of noise. Values below 0.05 are the best
+    var PARTICLE_COUNT = 250;     // Count of particles to work with
+    var MUTATION_RATE = 0.01;     // Maximum percentage of change when mutate
+    var MUTATION_CHANCE = 0.02;   // Percentage chance that gen will mutate
+    var REPEL_MODE = true;        // Two modes switch, true: farrer from mouse is better, false: closer to mouse in better
+    var CROSSOVER_COUNT = 40;     // Count of offsprings generated each round (population is stable)
+    var RANDOM_COUNT = 5;         // Count of new random particles generated each round
+    var FRAME_RATE = 100;         // Max FPS
+    var DISPLAY_RATE = 0.75;      // Percentage of fittest population which is displayed
+    var COUNTER_INCREMENT = 0.03;  //
+    var counter;
+    var mode;
+    var pool;
+    var dna;
+
+    // USER VARIABLES
+    var control = {
+      redner_fitness: false,
+      particle_count: 150,
+      display_rate: 0.75,
+      crossover_rate: 0.2,
+      newcomers_rate: 0.1,
+      mutation_rate: 0.01,
+      mutation_chance: 0.01
+    };
+
+    var gui;
+    // GUI
+    var gui = new dat.GUI();
+    gui.add(control, 'redner_fitness');
+    gui.add(control, 'particle_count', 10,400);
+    gui.add(control, 'display_rate', 0.0, 1.0);
+    gui.add(control, 'crossover_rate', 0.0, 1.0);
+    gui.add(control, 'mutation_rate', 0.0, 0.5);
+    gui.add(control, 'mutation_chance', 0.0, 0.5);
+
+
+    function fitToMouse(dna){
+      var x = mouseX;
+      var y = mouseY;
+      var a = dna.get(0);
+      var b = dna.get(1);
+      var dist = ((x - a)**2 + (y - b)**2)**0.5;
+      //dist = a + b;
+      return dist**0.2;
+    }
+
+    function fitToNoise(dna){
+      return noise(dna.get(0)*NOISE_SCALE,dna.get(1)*NOISE_SCALE,counter);
+    }
+
+    function displayNoise(){
+      loadPixels();
+      for (var x = 0; x < width; x++) {
+        for (var y = 0; y < height; y++) {
+          var bright = color(map(noise(x*NOISE_SCALE,y*NOISE_SCALE,counter),0,1,0,100));
+          set(x,y,bright);
+        }
+      }
+      updatePixels();
+    }
+
+    function setup(){
+
+      createCanvas(windowWidth-20, windowHeight-20);
+      colorMode(HSB,256,100,100);
+      noStroke();
+
+      pool = new Genepool();
+      dna = new Dna(2);
+      counter = 0;
+      mode = false;
+      dna.setRange(0,0,width);
+      dna.setRange(1,0,height);
+      pool.setTemplate(dna);
+      pool.createPool(control.particle_count,true);
+      pool.evaluateFitness(fitToNoise);
+      frameRate(FRAME_RATE);
+      noiseDetail(2,0.3);
+    }
+
+    function draw(){
+
+      counter += COUNTER_INCREMENT;
+      console.log(pool.count());
+      pool.count(control.particle_count);
+      pool.mutate(MUTATION_CHANCE,MUTATION_RATE);
+      var offsprings = pool.crossover(control.crossover_rate*control.particle_count);
+      var newcomers = pool.randomDna(control.newcomers_rate);
+      pool.sort(REPEL_MODE); // Change this to false to concentrate around mouse
+      pool.slice(0,control.crossover_rate*control.particle_count + control.newcomers_rate*control.particle_count);
+      pool.concat(offsprings);
+      pool.concat(newcomers);
+      pool.evaluateFitness(fitToNoise);
+      var fitnessRange = pool.getFitnessRange();
+
+      // DISPLAY
+      if (control.render_fitness){
+        displayNoise();
+        //noLoop();
+      } else {
+        background(0,0,95);
+      }
+      for(var i = 0; i < pool.count()*control.display_rate ;i++){ // Display top 50% of population
+        var ratio = map(pool.get(i).fitness,fitnessRange[0],fitnessRange[1],0,1);
+        fill(70*(ratio),100,80-30*(1-ratio));
+        //console.log(pool.get(i).fitness);
+        ellipse(pool.getValue(i,0),pool.getValue(i,1),5,5);
+      }
+    }
+
+    function keyPressed(key){
+      mode = !mode;
+      //loop();
+    }
+  </script>
+</body>
+</html>

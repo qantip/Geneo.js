@@ -916,18 +916,26 @@ class Genepool{
   * @param {integer} newCount - new count of Dna objects in genepool
   */
   setCount(newCount){
-    oldCount = this.pool.length;
+    var oldCount = this.pool.length;
     if (newCount > oldCount){
       for (var i = oldCount; i < newCount; i++){
         this.pool.push(this.template.copy())
       }
-    } else {
-      this.pool.slice(0,newCount);
-
+    } else if (newCount < oldCount) {
+      this.pool.slice(newCount);
     }
   }
 
-	count(){
+	count(number){
+		if (!(number === undefined)){
+			if (this.pool.length > number){
+				this.pool = this.pool.slice(0,number);
+			} else if (this.pool.lenth < number) {
+				for(var i = this.pool.length; i < number; i++){
+					this.pool.concat(this.randomDna());
+				}
+			}
+		}
 		return this.pool.length;
 	}
 
@@ -1141,6 +1149,10 @@ class Genepool{
 		} else {
 			this.pool = this.pool.slice(begin,end);
 		}
+	}
+
+	removeLast(count){
+		this.pool = this.pool.slice(count)
 	}
 
 	concat(dnaArray){

@@ -29,6 +29,7 @@ version: 0.04.16
     var control = {
       noise_scale: 0.001,
       mode: 1,
+      fps: 45,
       counter_increment: 0.01,
       render_fitness: false,
       particle_count: 150,
@@ -42,13 +43,14 @@ version: 0.04.16
 
     var gui = new dat.GUI();
     var enviroment = gui.addFolder("Enviroment Settings");
-    //gui.add(control, 'mode', {mouse: 0, perlin: 1})
     enviroment.add(control, 'render_fitness');
+    enviroment.add(control, 'fps');
     enviroment.add(control, 'counter_increment', 0 , 0.1);
     enviroment.add(control, 'particle_count', 10,400);
     enviroment.add(control, 'display_rate', 0.0, 1.0);
 
     var solver = gui.addFolder('Solver Settings');
+    solver.add(control, 'mode', { Mouse: 0, Perlin: 1, Mouse_Reversed: 2 });
     solver.add(control, 'crossover_rate', 0.01, 1.0);
     solver.add(control, 'newcomer_rate', 0.0, 1.0);
     solver.add(control, 'mutation_rate', 0.0, 0.1);
@@ -56,13 +58,13 @@ version: 0.04.16
     solver.open();
 
     function fitSelector(dna){
-      switch(control.mode){
+      switch(Number(control.mode)){
         case 0:
           return fitToMouse(dna);
-          break;
         case 1:
           return fitToNoise(dna);
-          break;
+        case 2:
+          return 1/fitToMouse(dna);
       }
     }
     function fitToMouse(dna){
@@ -71,8 +73,6 @@ version: 0.04.16
       var a = dna.get(0);
       var b = dna.get(1);
       var dist = ((x - a)**2 + (y - b)**2)**0.5;
-      //dist = a + b;
-      console.log(dist);
       return dist;
     }
 
@@ -105,12 +105,11 @@ version: 0.04.16
       dna.setRange(1,0,height);
       pool.setTemplate(dna);
       pool.createPool(control.particle_count,true);
-      frameRate(FRAME_RATE);
       noiseDetail(2,0.3);
     }
 
     function draw(){
-
+      frameRate(control.fps);
       counter += control.counter_increment;
       pool.count(control.particle_count);
       pool.mutate(control.mutation_chance,control.mutation_rate);
@@ -120,7 +119,7 @@ version: 0.04.16
       //console.log(offsprings.length);
       var newcomers = pool.randomDna(control.newcomer_rate*control.particle_count);
       //console.log(newcomers.length);
-      pool.sort(REPEL_MODE); // Change this to false to concentrate around mouse
+      pool.sort(); // Change this to false to concentrate around mouse
       pool.slice(0,-control.crossover_rate*control.particle_count - control.newcomer_rate*control.particle_count);
       //console.log(pool.count());
       pool.concat(offsprings);
@@ -139,7 +138,7 @@ version: 0.04.16
       }
       for(var i = 0; i < pool.count()*control.display_rate ;i++){ // Display top 50% of population
         var ratio = map(pool.get(i).fitness,fitnessRange[0],fitnessRange[1],0,1);
-        fill(70*(1-ratio),100,80-30*(ratio));
+        fill(70*(ratio),100,80-30*(1-ratio));
         //console.log(pool.get(i).fitness);
         ellipse(pool.getValue(i,0),pool.getValue(i,1),5,5);
       }

@@ -186,7 +186,7 @@ class Gen{
 		var args = Array.prototype.slice.call(arguments)
 		args.push(this);
 		var pick = Math.floor(Math.random()*args.length);
-		console.log(args.length,pick);
+		//console.log(args.length,pick);
 		return args[pick];
 	}
 
@@ -930,13 +930,12 @@ class Genepool{
 		if (!(number === undefined)){
 			if (this.pool.length > number){
 				this.pool = this.pool.slice(0,number);
-			} else if (this.pool.lenth < number) {
-				for(var i = this.pool.length; i < number; i++){
-					this.pool.concat(this.randomDna());
-				}
+			} else if (this.pool.length < number) {
+				this.concat(this.randomDna(number-this.pool.length));
 			}
+		} else {
+			return this.pool.length;
 		}
-		return this.pool.length;
 	}
 
   setDnaLenth(length){
@@ -1066,7 +1065,7 @@ class Genepool{
       return this.pool[index];
     }
     else {
-      throw new Error("Genepool.get() argument out of range.");
+      throw new Error("Genepool.get() argument out of range:"+index);
     }
   }
 
@@ -1100,17 +1099,19 @@ class Genepool{
 	getMattingPool(count){
 		var result = [];
 		var fitnessSum = 0.0;
-		for (var i = 0; i < this.count(); i++){
+		for (var i = 0; i < this.pool.length; i++){
+			if (isNaN(this.pool[i].fitness)){
+				throw new Error ("Genepool.getMattingPool() reached NaN at Genepool.pool["+i+"].fitness");
+			}
 			fitnessSum += this.pool[i].fitness;
 		}
 		for (var j = 0; j < count; j++){
 			var pick = Math.random() * fitnessSum;
 			var found = false;
-			for (var i = 0; (i < this.count())&&(!found); i++){
+			for (var i = 0; (i < this.pool.length)&&(!found); i++){
 				pick -= this.pool[i].fitness;
 				if (pick <= 0){
 					result.push(i);
-					//console.log("breaking:",result,count);
 					found = true;
 				}
 			}
@@ -1126,7 +1127,6 @@ class Genepool{
 		var nextPool = [];
 		var fatherPool = this.getMattingPool(count);
 		var motherPool = this.getMattingPool(count);
-		//console.log(fatherPool);
 		for (var i = 0; i < count; i++){
 			nextPool.push(this.get(motherPool[i]).blend(this.get(fatherPool[i])));
 		}

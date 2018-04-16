@@ -27,26 +27,42 @@ version: 0.04.12
 
     // USER VARIABLES
     var control = {
-      redner_fitness: false,
+      noise_scale: 0.001,
+      mode: 1,
+      counter_increment: 0.01,
+      render_fitness: false,
       particle_count: 150,
       display_rate: 0.75,
       crossover_rate: 0.2,
-      newcomers_rate: 0.1,
+      newcomer_rate: 0.1,
       mutation_rate: 0.01,
       mutation_chance: 0.01
     };
 
-    var gui;
-    // GUI
+
     var gui = new dat.GUI();
-    gui.add(control, 'redner_fitness');
-    gui.add(control, 'particle_count', 10,400);
-    gui.add(control, 'display_rate', 0.0, 1.0);
-    gui.add(control, 'crossover_rate', 0.0, 1.0);
-    gui.add(control, 'mutation_rate', 0.0, 0.5);
-    gui.add(control, 'mutation_chance', 0.0, 0.5);
+    var enviroment = gui.addFolder("Enviroment Settings");
+    //gui.add(control, 'mode', {mouse: 0, perlin: 1})
+    enviroment.add(control, 'render_fitness');
+    enviroment.add(control, 'counter_increment', 0 , 0.1);
+    enviroment.add(control, 'particle_count', 10,400);
+    enviroment.add(control, 'display_rate', 0.0, 1.0);
 
+    var solver = gui.addFolder('Solver Settings');
+    solver.add(control, 'crossover_rate', 0.01, 1.0);
+    solver.add(control, 'newcomer_rate', 0.0, 1.0);
+    solver.add(control, 'mutation_rate', 0.0, 0.1);
+    solver.add(control, 'mutation_chance', 0.0, 0.1000);
+    solver.open();
 
+    function fitSelector(dna){
+      switch(control.mode){
+        case 0:
+          return fitToMouse(dna);
+        case 1:
+          return fitToNoise(dna);
+      }
+    }
     function fitToMouse(dna){
       var x = mouseX;
       var y = mouseY;
@@ -54,7 +70,8 @@ version: 0.04.12
       var b = dna.get(1);
       var dist = ((x - a)**2 + (y - b)**2)**0.5;
       //dist = a + b;
-      return dist**0.2;
+      console.log(dist);
+      return dist;
     }
 
     function fitToNoise(dna){
@@ -86,27 +103,32 @@ version: 0.04.12
       dna.setRange(1,0,height);
       pool.setTemplate(dna);
       pool.createPool(control.particle_count,true);
-      pool.evaluateFitness(fitToNoise);
       frameRate(FRAME_RATE);
       noiseDetail(2,0.3);
     }
 
     function draw(){
 
-      counter += COUNTER_INCREMENT;
-      console.log(pool.count());
+      counter += control.counter_increment;
       pool.count(control.particle_count);
-      pool.mutate(MUTATION_CHANCE,MUTATION_RATE);
+      pool.mutate(control.mutation_chance,control.mutation_rate);
+      pool.evaluateFitness(fitSelector);
+      //console.log(pool.count());
       var offsprings = pool.crossover(control.crossover_rate*control.particle_count);
-      var newcomers = pool.randomDna(control.newcomers_rate);
+      //console.log(offsprings.length);
+      var newcomers = pool.randomDna(control.newcomer_rate*control.particle_count);
+      //console.log(newcomers.length);
       pool.sort(REPEL_MODE); // Change this to false to concentrate around mouse
-      pool.slice(0,control.crossover_rate*control.particle_count + control.newcomers_rate*control.particle_count);
+      pool.slice(0,-control.crossover_rate*control.particle_count - control.newcomer_rate*control.particle_count);
+      //console.log(pool.count());
       pool.concat(offsprings);
+      //console.log(pool.count());
       pool.concat(newcomers);
-      pool.evaluateFitness(fitToNoise);
+      //console.log(pool.count());
+      pool.evaluateFitness(fitSelector);
       var fitnessRange = pool.getFitnessRange();
-
       // DISPLAY
+      //console.log(pool.count());
       if (control.render_fitness){
         displayNoise();
         //noLoop();
@@ -115,15 +137,10 @@ version: 0.04.12
       }
       for(var i = 0; i < pool.count()*control.display_rate ;i++){ // Display top 50% of population
         var ratio = map(pool.get(i).fitness,fitnessRange[0],fitnessRange[1],0,1);
-        fill(70*(ratio),100,80-30*(1-ratio));
+        fill(70*(1-ratio),100,80-30*(ratio));
         //console.log(pool.get(i).fitness);
         ellipse(pool.getValue(i,0),pool.getValue(i,1),5,5);
       }
-    }
-
-    function keyPressed(key){
-      mode = !mode;
-      //loop();
     }
   </script>
 </body>

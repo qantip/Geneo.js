@@ -1,0 +1,126 @@
+<!--
+version: 0.05.21
+-->
+<html>
+<head>
+  <title>Geneo | Muuri demo</title>
+  <!-- web animations --> <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/web-animations/2.3.1/web-animations.min.js"></script>
+  <!-- hammer.js --> <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  <!-- muuri --> <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/muuri/0.5.4/muuri.min.js"></script>
+  <!-- p5 --><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js"></script>
+  <!-- dat.gui --><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.1/dat.gui.min.js"></script>
+  <!-- Geneo --><script type="text/javascript" src="../geneo.js"></script>
+  <style>
+    .grid {
+      position: relative;
+    }
+    .item {
+      display: block;
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      margin: 5px;
+      z-index: 1;
+      background: #F5F5F5 /* #DADFE5 */;
+      color: #AEB3C4;
+      text-align: center;
+      line-height: 100px;
+      font-size: 30px;
+      font-family: Arial;
+      border-radius: 2px;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+    }
+    .item.muuri-item-dragging {
+      z-index: 3;
+      background: #fafafa /* #E1EAF4 */;
+      box-shadow: 0 10px 18px rgba(0,0,0,0.2);
+    }
+    .item.muuri-item-releasing {
+      z-index: 2;
+    }
+    .item.muuri-item-hidden {
+      z-index: 0;
+    }
+    .item-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .addButton {
+      display: block;
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      margin: 5px;
+      z-index: 1;
+      background: #ECF4B5 /* #DADFE5 */;
+      color: #ADBC88;
+      text-align: center;
+      line-height: 100px;
+      font-size: 60px;
+      font-family: Arial;
+      border-radius: 2px;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+    }
+    .addButton:hover {
+        background: #F0F943;
+        color: #8C9124;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <div class="item">
+      <div class="item-content">
+        Uno
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-content">
+        Duo
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-content">
+        Tre
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-content">
+        Qua
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-content">
+        Pen
+      </div>
+    </div>
+  </div>
+  <div class="addButton" onclick="grid.add(addOne(++globalcounter))">
+    <div class="item-content" onclick="addOne()">
+      +
+    </div>
+  </div>
+  <script> // SCRIPT PART -----------------------------------------------------------
+
+    function addOne(content){
+      var itemElem = document.createElement('div');
+      var template = '<div class="item"><div class="item-content">'+content+'</div></div>';
+      //var template = '<div class="item-content">'+content+'</div>';
+      itemElem.innerHTML = template;
+      return itemElem.firstChild;
+    }
+
+    var globalcounter = 0;
+    var grid = new Muuri('.grid',{
+      dragEnabled: true
+    });
+    for (var i = 0; i < 100 ;i++){
+      var elem = addOne(++globalcounter);
+      grid.add(elem);
+    }
+
+    var pool = new Genepool();
+  </script>
+</body>
+</html>

@@ -11,24 +11,19 @@ version: 0.05.21
   <!-- dat.gui --><script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.1/dat.gui.min.js"></script>
   <!-- Geneo --><script type="text/javascript" src="../geneo.js"></script>
   <style>
+    body {
+      background: #F0F0F0;
+    }
     .grid {
       position: relative;
     }
     .item {
       display: block;
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 150px;
+      height: 150px;
       margin: 5px;
-      z-index: 1;
-      background: #F5F5F5 /* #DADFE5 */;
-      color: #AEB3C4;
-      text-align: center;
-      line-height: 100px;
-      font-size: 30px;
-      font-family: Arial;
-      border-radius: 2px;
-      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
+      border-radius: 5px;
     }
     .item.muuri-item-dragging {
       z-index: 3;
@@ -42,6 +37,16 @@ version: 0.05.21
       z-index: 0;
     }
     .item-content {
+
+      z-index: 1;
+      background: #FFFFFF /* #DADFE5 */;
+      color: #AEB3C4;
+      text-align: center;
+      line-height: 100px;
+      font-size: 30px;
+      font-family: Arial;
+      border-radius: 5px;
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
       position: relative;
       width: 100%;
       height: 100%;
@@ -63,41 +68,23 @@ version: 0.05.21
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
     }
     .addButton:hover {
-        background: #F0F943;
+        background: #FFFFFF;
         color: #8C9124;
+    }
+    .color {
+      width: 150px;
+      height: 120px;
+      margin: 0;
+      border-radius: 5px 5px 0px 0px;
     }
   </style>
 </head>
 <body>
   <div class="grid">
-    <div class="item">
-      <div class="item-content">
-        Uno
-      </div>
-    </div>
-    <div class="item">
-      <div class="item-content">
-        Duo
-      </div>
-    </div>
-    <div class="item">
-      <div class="item-content">
-        Tre
-      </div>
-    </div>
-    <div class="item">
-      <div class="item-content">
-        Qua
-      </div>
-    </div>
-    <div class="item">
-      <div class="item-content">
-        Pen
-      </div>
-    </div>
+    <!--javascript generated-->
   </div>
-  <div class="addButton" onclick="grid.add(addOne(++globalcounter))">
-    <div class="item-content" onclick="addOne()">
+  <div class="addButton" onclick="add()">
+    <div class="item-content">
       +
     </div>
   </div>
@@ -105,20 +92,38 @@ version: 0.05.21
 
     function addOne(content){
       var itemElem = document.createElement('div');
-      var template = '<div class="item"><div class="item-content">'+content+'</div></div>';
+      var template = '<div class="item" onclick="del('+content+')"><div class="item-content"><div class="color" style="background: rgba('+Math.random()*255+','+Math.random()*255+','+Math.random()*255+',1)"'+content+'</div></div>';
+      //var template = '<div class="item" onclick="del('+content+')"><div class="item-content">'+content+'</div></div>';
       //var template = '<div class="item-content">'+content+'</div>';
       itemElem.innerHTML = template;
       return itemElem.firstChild;
     }
 
+    function add(){
+      var elem = addOne(++globalcounter);
+      elem.style.display = 'none';
+      grid.add(elem);
+      grid.show();
+    }
+
+    function del(argument){
+      grid.hide(argument);
+
+    }
+
     var globalcounter = 0;
     var grid = new Muuri('.grid',{
-      dragEnabled: true
+      dragEnabled: true,
+      showDuration: 500,
+      showEasing: 'ease',
     });
     for (var i = 0; i < 100 ;i++){
       var elem = addOne(++globalcounter);
+      elem.style.display = 'none';
       grid.add(elem);
     }
+    grid.show();
+
 
     var pool = new Genepool();
   </script>

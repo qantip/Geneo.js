@@ -17,7 +17,24 @@ class Gen{
 	* @constructor
 	* @param {float} value - setting raw (in range 0.0 to 1.1) value of gen.
 	*/
-	constructor(value){
+
+	default = { // Default values of object
+		max: 1.0,
+		min: 0.0,
+		wrap: false,
+		mode: 0
+	}
+	/*
+	constructor(settings) {
+		// replace default with new settings
+		this.count = settings.count;
+		this.max = settings.max;
+		this.min = settings.min;
+		this.wrap = settings.wrap;
+		this.mode = settings.mode;
+	}
+	*/
+	constructor(value, settings){
 		if (isNaN(value)){
 			throw new Error("Gen.constructor(): argument is not a number");
 		} else {

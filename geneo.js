@@ -1250,4 +1250,88 @@ function weightedRandom(weightArray){
 	}
 }
 
+/**
+* Merge two objects recursively (deep merge). The source object's properties
+* are merged to the target object. (taken from muuri.js)
+*
+* @private
+* @param {Object} target
+*   - The target object.
+* @param {Object} source
+*   - The source object.
+* @returns {Object} Returns the target object.
+* @license https://github.com/haltu/muuri/blob/master/LICENSE.md
+*/
+function mergeObjects(target, source) {
+
+// Loop through the surce object's props.
+Object.keys(source).forEach(function (propName) {
+
+	var isObject = isPlainObject(source[propName]);
+
+	// If target and source values are both objects, merge the objects and
+	// assign the merged value to the target property.
+	if (isPlainObject(target[propName]) && isObject) {
+		target[propName] = mergeObjects({}, target[propName]);
+		target[propName] = mergeObjects(target[propName], source[propName]);
+	}
+
+	// Otherwise set the source object's value to target object and make sure
+	// that object and array values are cloned and directly assigned.
+	else {
+		target[propName] = isObject ? mergeObjects({}, source[propName]) :
+			Array.isArray(source[propName]) ? source[propName].concat() :
+			source[propName];
+	}
+
+});
+
+return target;
+
+}
+
+/**
+ * Merge default settings with user settings. The returned object is a new
+ * object with merged values. The merging is a deep merge meaning that all
+ * objects and arrays within the provided settings objects will be also merged
+ * so that modifying the values of the settings object will have no effect on
+ * the returned object. (Taken from muuri.js)
+ *
+ * @private
+ * @param {Object} defaultSettings
+ * @param {Object} [userSettings]
+ * @returns {Object} Returns a new object.
+ * @license https://github.com/haltu/muuri/blob/master/LICENSE.md
+ */
+function mergeSettings(defaultSettings, userSettings) {
+
+  // Create a fresh copy of default settings.
+  var ret = mergeObjects({}, defaultSettings);
+
+  // Merge user settings to default settings.
+  ret = userSettings ? mergeObjects(ret, userSettings) : ret;
+
+  // Handle visible/hidden styles manually so that the whole object is
+  // overriden instead of the props.
+  ret.visibleStyles = (userSettings || {}).visibleStyles || (defaultSettings || {}).visibleStyles;
+  ret.hiddenStyles = (userSettings || {}).hiddenStyles || (defaultSettings || {}).hiddenStyles;
+
+  return ret;
+
+}
+
+/**
+* Check if a value is a plain object.
+*
+* @private
+* @param {*} val
+* @returns {Boolean}
+* @license https://github.com/haltu/muuri/blob/master/LICENSE.md
+*/
+function isPlainObject(val) {
+
+	return typeof val === 'object' && Object.prototype.toString.call(val) === '[object Object]';
+
+}
+
 //export {Gen, Dna, Geneo, Genepool, map, constrain, weightedRandom};

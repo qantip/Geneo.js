@@ -7,6 +7,14 @@
 * @todo levy flight mutation
 */
 
+defaultGen = { // Default values of Gen Object
+	max: 1.0,
+	min: 0.0,
+	wrap: false,
+	mode: 0,
+	value: 0
+}
+
 /**
 * @class
 * @classdesc Class for elementry data handling. Simulation of signle gen behaviour.
@@ -18,15 +26,10 @@ class Gen{
 	* @param {float} value - setting raw (in range 0.0 to 1.1) value of gen.
 	*/
 
-	default = { // Default values of object
-		max: 1.0,
-		min: 0.0,
-		wrap: false,
-		mode: 0
-	}
 	/*
-	constructor(settings) {
+	constructor(userSettings) {
 		// replace default with new settings
+		settings = mergeSettings(defaultGen,userSettings);
 		this.count = settings.count;
 		this.max = settings.max;
 		this.min = settings.min;
@@ -1323,17 +1326,18 @@ return target;
 function mergeSettings(defaultSettings, userSettings) {
 
   // Create a fresh copy of default settings.
-  var ret = mergeObjects({}, defaultSettings);
+  var result = mergeObjects({}, defaultSettings);
 
   // Merge user settings to default settings.
-  ret = userSettings ? mergeObjects(ret, userSettings) : ret;
+  result = userSettings ? mergeObjects(ret, userSettings) : result;
 
   // Handle visible/hidden styles manually so that the whole object is
   // overriden instead of the props.
-  ret.visibleStyles = (userSettings || {}).visibleStyles || (defaultSettings || {}).visibleStyles;
-  ret.hiddenStyles = (userSettings || {}).hiddenStyles || (defaultSettings || {}).hiddenStyles;
+  // result.visibleStyles = (userSettings || {}).visibleStyles || (defaultSettings || {}).visibleStyles;
+  // result.hiddenStyles = (userSettings || {}).hiddenStyles || (defaultSettings || {}).hiddenStyles;
+	// NOTE: No idea what's going on here.
 
-  return ret;
+  return result;
 
 }
 

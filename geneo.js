@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.4.12
+* @version 0.7.09
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 * @todo levy flight mutation
 */
@@ -23,20 +23,24 @@ class Gen{
 	/**
 	* Gen construtor
 	* @constructor
-	* @param {float} value - setting raw (in range 0.0 to 1.1) value of gen.
+	* @param {object} userSettings - Setting parameters of Gen object.
 	*/
 
-	/*
 	constructor(userSettings) {
 		// replace default with new settings
-		settings = mergeSettings(defaultGen,userSettings);
-		this.count = settings.count;
-		this.max = settings.max;
-		this.min = settings.min;
-		this.wrap = settings.wrap;
-		this.mode = settings.mode;
+		var settings = mergeSettings(defaultGen,userSettings);
+		//this.count = settings.count;
+		//this.max = settings.max;
+		//this.min = settings.min;
+		this.setRange(settings.min,settings.max);
+		//this.wrap = settings.wrap;
+		this.setWrap(settings.wrap);
+		//this.mode = settings.mode;
+		this.setMode(settings.mode);
+		this.setValue(settings.value);
 	}
-	*/
+
+	/*
 	constructor(value, settings){
 		if (isNaN(value)){
 			throw new Error("Gen.constructor(): argument is not a number");
@@ -48,12 +52,22 @@ class Gen{
 		this.wrap = false;
 		this.mode = 0;
 	}
+	*/
+
+
+	/**
+	* Legacy componetnt - use getValue()
+	*/
+	get(){
+		console.log("using legacy component Gen.get() use Gen.getValue() instead");
+		return this.getValue();
+	}
 
 	/**
 	* Return phenotype value of gen (in range this.min to this.max).
-	* @returns {float|integer} value in range this.min to this.max interpolated by mode of gen.
+	* @returns {float|integer|boolean} value in range this.min to this.max interpolated by mode of gen.
 	*/
-	get(){
+	getValue(){
 		switch(this.mode){
 			case 0: // return float
 				return map(this.value,0,1,this.min,this.max);
@@ -115,6 +129,20 @@ class Gen{
 	}
 
 	/**
+	* Returns settings object of Gen
+	* @returns {Object} Settings
+	*/
+	getSettings(){
+		var result = {};
+		result.min = this.getMin();
+		result.max = this.getMax();
+		result.wrap = this.getWrap();
+		result.mode = this.getMode();
+		result.value = this.getValue();
+		return result;
+	}
+
+	/**
 	* Seting raw value of gen (in range 0.0 to 1.0).
 	* @param {float} input - raw value to set
 	*/
@@ -122,7 +150,6 @@ class Gen{
 			if ((input < 0) || (input > 1)){
 				throw new Error("input value not in range 0.0 to 1.0");
 			}
-			//console.log(input); // DEBUG
 			this.value = input;
 		}
 
@@ -131,6 +158,16 @@ class Gen{
 	*	@param {float} input - value to set
 	*/
 	set(input){
+		console.log("legacy component Gen.set() use Gen.setValue() instead");
+		return this.setValue(input);
+		//this.value = map(input,this.min,this.max,0,1);
+	}
+
+	/**
+	* Seting phenotype value of gen (in range this.min to this.max)
+	*	@param {float} input - value to set
+	*/
+	setValue(input){
 		this.value = map(input,this.min,this.max,0,1);
 	}
 
@@ -139,11 +176,18 @@ class Gen{
 	* @param {float} low - minimum value of phenotype (when raw value is equal to 0.0)
 	* @param {float} high - maximum value of phenotype (when raw value is equal to 1.0)
 	*/
-	setRange(low,high){
-		// TODO: raw value to change to keep phenotype value same
-		// TODO: maintain phenotype value out of low high when value will be reinterpolated
-		this.min = low;
-		this.max = high;
+	setRange(low,high,constrain){
+		// DONE: raw value to change to keep phenotype value same
+		if (constrain) { // Constrain value
+			var oldValue = map(this.value,0,1,this.min,this.max);
+			this.min = low;
+			this.max = high;
+			this.set(OldValue);
+		} else { // Remap Value
+			this.min = low;
+			this.max = high;
+		}
+		// DONE: maintain phenotype value out of low high when value will be reinterpolated
 		//this.value = constrain(this.value,this.min,this.max);
 	}
 
@@ -162,7 +206,12 @@ class Gen{
 	*/
 	setMode(mode){
 		// TODO: Mode control - to be only possible values
-		this.mode = mode;
+		const modeList = [0,1,2,3];
+		if (mode in modeList){
+			this.mode = mode;
+		} else{
+			throw new Error("Unknown Gen.mode(mode) argument.")
+		}
 	}
 
 	/**
@@ -215,13 +264,34 @@ class Gen{
 	*	@param {Gen} gen - gen to blend with
 	* @returns {Gen} Blended gen
 	*/
-	blend(gen){ //TODO: Insert wrap mode;
-		var result = this.copy();
-		var ratio = Math.random();
-		result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
-		return result;
+	blend(gen){ //TODO: optimalise
+		if (this.wrap) {
+			console.log("wrap enabled");
+			if (Math.abs(gen.getRaw() - this.getRaw()) < 0.5){ // No wrap needed
+				var result = this.copy();
+				var ratio = Math.random();
+				result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
+				return result;
+			} else { // need to wrap
+				console.log("wraping");
+				var result = this.copy();
+				var ratio = Math.random();
+				if (this.getRaw() <= gen.getRaw()){ //TODO: optimalise
+					result.setRaw((this.getRaw()*ratio + (gen.getRaw()-1)*(1-ratio) + 1)%1);
+				} else {
+					result.setRaw((gen.getRaw()*ratio + (this.getRaw()-1)*(1-ratio) + 1)%1);
+				}
+				return result;
+			}
+		} else {
+			var result = this.copy();
+			var ratio = Math.random();
+			result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
+			return result;
+		}
 	}
 
+	/*
 	blendOld(genArray){
 		// if (Array.isArray(somebody)) {
 		var args = Array.prototype.slice.call(arguments)
@@ -234,8 +304,9 @@ class Gen{
 		}
 		var weightPick = Math.random()*weightSum;
 
+
 		// Dna copy of this
-		// TODO: use Dna.copy() once it's done
+		// XTODO: use Dna.copy() once it's done
 		var result = new Gen(0);
 		result.setRange(this.min,this.max);
 		result.setMode(this.mode);
@@ -248,7 +319,7 @@ class Gen{
 		result.setRaw(weightedValue); // set new value
 		return result;
 	}
-
+	*/
 
  /**
   * Checks compatibility with another gen
@@ -279,14 +350,13 @@ class Gen{
 	*/
 	copy(){
 		// NOT TESTED
-		var result = new Gen(this.getRaw());
-		result.setWrap(this.wrap);
-		result.setMode(this.mode);
-		result.setRange(this.min,this.max);
+		var result = new Gen(this.getSettings());
+		//result.setWrap(this.wrap);
+		//result.setMode(this.mode);
+		//result.setRange(this.min,this.max);
 		return result;
 	}
 }
-
 
 
 /*******************************************************************************
@@ -299,10 +369,16 @@ class Dna{
 	* @constructor
 	* @param {integer} length - count of genes in Dna
 	*/
-	constructor(length){
+	constructor(length,userSettings){
 		this.genes = []
-		for(var i = 0; i < length; i++){
-			this.genes.push(new Gen(0));
+		if (!(userSettings instanceof Array)){
+			for(var i = 0; i < length; i++){
+				this.genes.push(new Gen(userSettings));
+			}
+		} else {
+			for(var i = 0; i < length; i++){
+				this.genes.push(new Gen(userSettings[i % userSettings.length]));
+			}
 		}
 	}
 
@@ -312,7 +388,7 @@ class Dna{
 	* @returns {float | integer} selected gen value in range gen.min to gen.max interpolated by mode of gen.
 	*/
 	get(index){
-		return this.genes[index].get();
+		return this.genes[index].getValue();
 	}
 
 	/**
@@ -322,7 +398,7 @@ class Dna{
 	getAll(){
 		var result = [];
 		for (var i = 0; i < this.length(); i++){
-			result.push(this.get(i));
+			result.push(this.getValue(i));
 		}
 		return result;
 	}
@@ -587,7 +663,7 @@ class Dna{
 			if (i != 0){
 				string = string.concat(", ");
 			}
-			string = string.concat(Number(this.genes[i].get()).toFixed(decimals));
+			string = string.concat(Number(this.genes[i].getValue()).toFixed(decimals));
 		}
 		string = string.concat("]");
 		console.log(string);
@@ -797,7 +873,7 @@ class Geneo{
 			var result = new Dna(dnaLength);
 			for (var i = 0; i < dnaLength; i++){
 				var pick = Math.floor(Math.random()*parentCount);
-				result.set(i,dnaArray[pick].get(i));
+				result.set(i,dnaArray[pick].getValue(i));
 			}
 			return result;
 		}
@@ -877,7 +953,7 @@ class Geneo{
 		var fitness = [];
 		for (var i = 0; i < dnaArray.length; i++){
 			//console.log(dnaArray[i].get(0),dnaArray[i].get(1));
-			fitness.push(fitnessFunction(dnaArray[i].get(0),dnaArray[i].get(1))); // TODO: Can't be done this way
+			fitness.push(fitnessFunction(dnaArray[i].getValue(0),dnaArray[i].getValue(1))); // TODO: Can't be done this way
 		}
 	 	//console.log(fitness);
 		return fitness;
@@ -1329,7 +1405,7 @@ function mergeSettings(defaultSettings, userSettings) {
   var result = mergeObjects({}, defaultSettings);
 
   // Merge user settings to default settings.
-  result = userSettings ? mergeObjects(ret, userSettings) : result;
+  result = userSettings ? mergeObjects(result, userSettings) : result;
 
   // Handle visible/hidden styles manually so that the whole object is
   // overriden instead of the props.

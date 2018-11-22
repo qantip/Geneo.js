@@ -2,7 +2,7 @@
 * @file Main library of classes and function for evolutionary equations.
 * @author Lukáš Matěja
 * @copyright Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International Public License
-* @version 0.7.09
+* @version 0.11.22
 * @see {@link https://github.com/qantip/Geneo.js | Github }
 * @todo levy flight mutation
 */
@@ -205,7 +205,7 @@ class Gen{
 	* @todo mode control
 	*/
 	setMode(mode){
-		// TODO: Mode control - to be only possible values
+		// DONE: Mode control - to be only possible values
 		const modeList = [0,1,2,3];
 		if (mode in modeList){
 			this.mode = mode;
@@ -264,26 +264,26 @@ class Gen{
 	*	@param {Gen} gen - gen to blend with
 	* @returns {Gen} Blended gen
 	*/
-	blend(gen){ //TODO: optimalise
+	blend(gen){ //DONE: optimalise NOTE: Seams to me OK now. It Could be done better but this works fine.
 		if (this.wrap) {
-			console.log("wrap enabled");
+			//console.log("wrap enabled");
 			if (Math.abs(gen.getRaw() - this.getRaw()) < 0.5){ // No wrap needed
 				var result = this.copy();
 				var ratio = Math.random();
 				result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
 				return result;
 			} else { // need to wrap
-				console.log("wraping");
+				//console.log("wraping");
 				var result = this.copy();
 				var ratio = Math.random();
-				if (this.getRaw() <= gen.getRaw()){ //TODO: optimalise
+				if (this.getRaw() <= gen.getRaw()){ //DONE: optimalise
 					result.setRaw((this.getRaw()*ratio + (gen.getRaw()-1)*(1-ratio) + 1)%1);
 				} else {
 					result.setRaw((gen.getRaw()*ratio + (this.getRaw()-1)*(1-ratio) + 1)%1);
 				}
 				return result;
 			}
-		} else {
+		} else { //not wrap
 			var result = this.copy();
 			var ratio = Math.random();
 			result.setRaw( this.getRaw()*ratio + gen.getRaw()*(1-ratio));
@@ -323,8 +323,8 @@ class Gen{
 
  /**
   * Checks compatibility with another gen
-  * @param {Gen[] | Gen} genArray Description
-  * @return {type} Description
+  * @param {Gen[] | Gen} genArray - Array of Gen objects to test
+  * @return {type} true if compatible, false if not
   */
 	compatibleWith(genArray){
 		if (!(genArray instanceof Array)){
@@ -340,6 +340,7 @@ class Gen{
 			return true;
 		}
 		catch(error) {
+			console.log("error catch in Gen.compatibleWith()");
 		 return false;
 		}
 	}
@@ -479,12 +480,20 @@ class Dna{
 	}
 
 	/**
+	* Legacy Component, use setValue() instead
+	*/
+	set(index, value){
+		console.log("legacy component Dna.set() use Dna.setValue() instead.");
+		this.setValue(index, value);
+	}
+
+	/**
 	* Set phenotype value of single Gen in Dna object.
 	* @param {integer} index - gen index in Dna
 	* @param {float} value - phenotype value to set
 	*/
-	set(index, value){
-		this.genes[index].set(value);
+	setValue(index, value){
+		this.genes[index].setValue(value);
 	}
 
 	/**
@@ -492,8 +501,11 @@ class Dna{
 	* @param {float[]} valueArray - phenotype values in array
 	*/
 	setAll(valuesArray){
+		if (this.length() > valuesArray.length){
+			throw new Error("valuesArray.length is "+valuesArray.length+" instead of requested "+this.length(),".");
+		}
 		for (var i = 0; i < this.length(); i++){
-			this.set(i,valuesArray[i]);
+			this.setValue(i,valuesArray[i]);
 		}
 	}
 
@@ -599,17 +611,22 @@ class Dna{
 		if (!(dnaArray instanceof Array)){
 			dnaArray = [dnaArray]
 		}
-		dnaArray.push(this);
-		// TODO: compatibilityCheck
-		var count = dnaArray.length;
-		var dnaLength = this.length();
-		var result = new Dna(dnaLength);
-		for (var i = 0; i < dnaLength; i++){
-			var pick = Math.floor(Math.random() * count);
-			//console.log(pick);
-			result.setRaw(i, dnaArray[pick].getRaw(i) );
+		if (this.compatibleWith(dnaArray)){
+			dnaArray.push(this);
+			// DONE: compatibilityCheck
+			var count = dnaArray.length;
+			var dnaLength = this.length();
+			var result = this.copy(); // This is stange because it shoud not be new just copy;
+			for (var i = 0; i < dnaLength; i++){
+				var pick = Math.floor(Math.random() * count);
+				//console.log(pick);
+				result.setRaw(i, dnaArray[pick].getRaw(i) );
+			}
+			return result;
+		} else {
+			console.log("Incompatible Dna objects to combine") // Maybe throw an error will be better
+			return null;
 		}
-		return result;
 	}
 
 	/**
@@ -618,11 +635,16 @@ class Dna{
 	* @returns {Dna} Blended Dna object
 	*/
 	blend(dna){
-		var result = this.copy();
-		for (var i = 0; i < result.length(); i++){
-			result.genes[i] = this.genes[i].blend(dna.genes[i])
+		if (this.compatibleWith(dna)) {
+			var result = this.copy();
+			for (var i = 0; i < result.length(); i++){
+				result.genes[i] = this.genes[i].blend(dna.genes[i])
+			}
+			return result;
+		} else {
+			console.log("dna.blend() argument is incompatible"); // Maybe throw an error will be better
+			return null;
 		}
-		return result;
 	}
 
 	/**
@@ -630,7 +652,7 @@ class Dna{
 	* @private
 	*/
 	blendOld(dna){
-		// TODO: compatibilityCheck
+		// XTODO: compatibilityCheck
 		var result = new Dna(this.length());
 		for (var i = 0; i < this.lenght; i++){
 			result.setMode(i,this.getMode(i));
@@ -640,7 +662,7 @@ class Dna{
 		for (var i = 0; i < this.length(); i++){
 			var ratio = Math.random();
 			var value = this.getRaw(i)*ratio + dna.getRaw(i)*(1-ratio);
-			// TODO: why not Gen.blend()?
+			// XTODO: why not Gen.blend()?
 			//console.log(value);
 			result.setRaw(i,value);
 			//console.log("Fen:",result.get(i));
@@ -654,7 +676,7 @@ class Dna{
 	* @param {integer} decimals - count of decimals
 	*/
 	echo(decimals){
-		// TODO: Something wrong with decimals
+		// DONE: Something wrong with decimals NOTE: Seams ok to me, I'll keep it here for while
 		if (decimals === undefined){
 			decimals = 3;
 		}
@@ -689,12 +711,28 @@ class Dna{
 		return result;
 	}
 
+	/**
+	* Test compatibility with other Dna objects.
+	* @param {Dna | Dna[]} dnaArray - Array of Dna objects to test
+	* @returns {boolean} true if compatible, false if not.
+	*
+	*/
 	compatibleWith(dnaArray){
 		if (!(dnaArray instanceof Array)){
 			dnaArray = [dnaArray]
 		}
-		for (var i = 0; i < this.length(); i++){
-			//TODO: Unfinished
+		try {
+			for (var i = 0; i < dnaArray.length; i++){
+				if(!(dnaArray[i].length() == this.length())){ return false; }
+				for (var j = 0; j < this.length(); j++){
+					if(!(dnaArray[i].genes[j].compatibleWith(this.genes[j]))){ return false; }
+				}
+			}
+			return true;
+		}
+		catch(error) {
+			console.log("error catch in Dna.compatibleWith()");
+			return false;
 		}
 	}
 }
@@ -786,7 +824,7 @@ class Geneo{
   * @param {float} high - maximum pehotype limit to set
 	*/
 	setAllRange(low,high){
-		// TODO: Low high swicth
+		// TODO: Low high swicth NOTE: I don't know if it is necesary when this will be legacy soon
 		for (var i = 0; i < this.genLength; i++){
 			this.genRange[i] = {min:low, max:high};
 		}
@@ -862,6 +900,7 @@ class Geneo{
 	/**
 	* I have no idea what I wanted to do with this.
 	* @todo delete this if it is not needed
+	* @ignore
 	*/
 	combine(dnaArray){
 		if (this.lengthCheck(dnaArray)){
@@ -897,14 +936,15 @@ class Geneo{
 
 	/**
 	* Checks if parameters of all Dna objects is the same (Everything excluding values).
-	* @param {Dna[]} dnaArray - Array of Dna object to check
+	* @param {Dna | Dna[]} dnaArray - Array of Dna object to check
 	* @return {boolean} not done yet
+	* @ignore
 	*/
 	compatibilityCheck(dnaArray){
 		var result = true;
 		var length = dnaArray[0].length();
 		for (var i = 1; i < dnaArray.length; i++){
-		// TODO: finish this method
+		// XTODO: finish this method NOTE: Not needed any more
 		}
 	}
 

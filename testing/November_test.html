@@ -1,0 +1,29 @@
+<html>
+<head>
+  <script src="..\geneo.js"></script>
+</head>
+<body>
+  <script>
+    /*
+    a = new Gen();
+    b = new Gen();
+    a.setWrap(true);
+    b.setWrap(true);
+    a.setRaw(0.1);
+    b.setRaw(0.9);
+    c = a.blend(b);
+    */
+    a = new Dna(3);
+    b = new Dna(3);
+    console.log(a.compatibleWith(b));
+    b = new Dna(4);
+    console.log(a.compatibleWith(b));
+    b = a.copy();
+    b.setWrap(0,true);
+    console.log(a.compatibleWith(b));
+    b.setWrap(0,false);
+    console.log(a.compatibleWith(b));
+    
+  </script>
+</body>
+</html>
